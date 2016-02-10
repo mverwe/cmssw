@@ -26,13 +26,14 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
                             fileNames = cms.untracked.vstring(
-                                "file:/afs/cern.ch/user/m/mverweij/work/soft/forest/test/samples/PbPb_MC_AODSIM.root"
+                                "file:/afs/cern.ch/user/m/mverweij/work/soft/forest/cs/test/testfile/step3_1.root"
+#                                "file:/afs/cern.ch/user/m/mverweij/work/soft/forest/test/samples/PbPb_MC_AODSIM.root"
                                 )
                             )
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)#10)
+    input = cms.untracked.int32(1)
 )
 
 
@@ -64,6 +65,15 @@ process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 
 process.TFileService = cms.Service("TFileService",
                                    fileName=cms.string("HiForestAOD.root"))
+
+#process.output = cms.OutputModule("PoolOutputModule",
+#                                  outputCommands = cms.untracked.vstring('drop *',
+#                                                                         'keep *_particleFlow_*_*',
+#                                                                         'keep *_mapEtaEdges_*_*',
+#                                                                         'keep *_*_*_HiForest'),
+#                                  fileName       = cms.untracked.string ("Output.root")
+#)
+#process.outpath  = cms.EndPath(process.output)
 
 #####################################################################################
 # Additional Reconstruction and Analysis: Main Body
@@ -146,6 +156,8 @@ process.load('RecoJets.JetProducers.kt4PFJets_cfi')
 process.load('HiJetBackground.HiFJRhoProducer.hiFJRhoProducer')
 process.kt4PFJets.src = cms.InputTag('particleFlowTmp')
 process.kt4PFJets.doAreaFastjet = True
+process.kt4PFJets.jetPtMin      = cms.double(0.0)
+process.kt4PFJets.GhostArea     = cms.double(0.005)
 process.load('HiJetBackground.HiFJRhoProducer.hiFJRhoAnalyzer')
 
 process.load('HeavyIonsAnalysis.JetAnalysis.akCS4PFJetSequence_Marta')
