@@ -66,14 +66,14 @@ process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.TFileService = cms.Service("TFileService",
                                    fileName=cms.string("HiForestAOD.root"))
 
-#process.output = cms.OutputModule("PoolOutputModule",
-#                                  outputCommands = cms.untracked.vstring('drop *',
-#                                                                         'keep *_particleFlow_*_*',
-#                                                                         'keep *_mapEtaEdges_*_*',
-#                                                                         'keep *_*_*_HiForest'),
-#                                  fileName       = cms.untracked.string ("Output.root")
-#)
-#process.outpath  = cms.EndPath(process.output)
+process.output = cms.OutputModule("PoolOutputModule",
+                                  outputCommands = cms.untracked.vstring('drop *',
+                                                                         'keep *_particleFlow_*_*',
+                                                                         'keep *_mapEtaEdges_*_*',
+                                                                         'keep *_*_*_HiForest'),
+                                  fileName       = cms.untracked.string ("Output.root")
+)
+process.outpath  = cms.EndPath(process.output)
 
 #####################################################################################
 # Additional Reconstruction and Analysis: Main Body
@@ -162,6 +162,9 @@ process.load('HiJetBackground.HiFJRhoProducer.hiFJRhoAnalyzer')
 
 process.load('HeavyIonsAnalysis.JetAnalysis.akCS4PFJetSequence_Marta')
 process.load('HeavyIonsAnalysis.JetAnalysis.akCs4PFJetSequence_PbPb_mc_cff')
+
+process.akCs4PFJets.verbosity = cms.int32(10)
+process.akCs4PFJets.jetCollInstanceName = cms.string("pfParticlesCs")
 
 #########################
 # Main analysis list

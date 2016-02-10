@@ -18,5 +18,6 @@ akCs4PFJets = ak8PFJetsCS.clone(
     etaMap    = cms.InputTag('hiFJRhoProducer','mapEtaEdges'),
     rho       = cms.InputTag('hiFJRhoProducer','mapToRho'),
     rhom      = cms.InputTag('hiFJRhoProducer','mapToRhoM'),
-    csAlpha   = cms.double(1.)
+    csAlpha   = cms.double(1.),
+    writeCompound = cms.bool(True)
     )
