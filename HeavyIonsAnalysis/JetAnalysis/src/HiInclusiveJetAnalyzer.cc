@@ -1000,6 +1000,14 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
     jets_.jtm[jets_.nref] = jet.mass();
     jets_.jtarea[jets_.nref] = jet.jetArea();
 
+    //Loop over the jet constituents
+    double sum = 0.;
+    for(auto daughter : jet.getJetConstituentsQuick()){
+      //auto part = static_cast<const reco::PFCandidate*>(daughter);
+      sum += daughter->pt();
+    }
+    Printf("jet pt: %f raw: %f sum pt: %f",jet.pt(),jets_.rawpt[jets_.nref],sum);
+      
     if(usePat_){
 
       if(doStandardJetID_){
