@@ -141,7 +141,8 @@ void PuppiAlgo::computeMedRMS(const unsigned int &iAlgo,const double &iPVFrac) {
     // in case you have alphas == 0
     int lNum0 = 0;
     for(int i0 = lNBefore; i0 < lNBefore+fNCount[iAlgo]; i0++) {
-        if(fPups[i0] == 0) lNum0 = i0-lNBefore;
+      //if(fPups[i0] == 0) lNum0 = i0-lNBefore;
+      if(fPups[i0] <= 0) lNum0 = i0-lNBefore;  //MV: not sure why this is needed
     }
 
     // comput median, removed lCorr for now

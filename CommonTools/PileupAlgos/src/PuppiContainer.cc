@@ -23,11 +23,15 @@ PuppiContainer::PuppiContainer(const edm::ParameterSet &iConfig) {
         PuppiAlgo pPuppiConfig(lAlgos[i0]);
         fPuppiAlgo.push_back(pPuppiConfig);
     }
+    fNExLJ           = iConfig.getParameter<unsigned int>("nExLJ");
+    fExRadius        = iConfig.getParameter<double>("exRadius");
+    fExPtMin         = iConfig.getParameter<double>("exPtMin");
 }
 
-void PuppiContainer::initialize(const std::vector<RecoObj> &iRecoObjects) {
+void PuppiContainer::initialize(const std::vector<RecoObj> &iRecoObjects, const std::vector<RecoObj> &iRecoJetObjects) {
     //Clear everything
     fRecoParticles.resize(0);
+    fRecoJets.resize(0);
     fPFParticles  .resize(0);
     fChargedPV    .resize(0);
     fPupParticles .resize(0);
@@ -41,6 +45,7 @@ void PuppiContainer::initialize(const std::vector<RecoObj> &iRecoObjects) {
     fPVFrac = 0.;
     fNPV    = 1.;
     fRecoParticles = iRecoObjects;
+    fRecoJets      = iRecoJetObjects;
     for (unsigned int i = 0; i < fRecoParticles.size(); i++){
         fastjet::PseudoJet curPseudoJet;
         auto fRecoParticle = fRecoParticles[i];
@@ -57,6 +62,10 @@ void PuppiContainer::initialize(const std::vector<RecoObj> &iRecoObjects) {
         if(fRecoParticle.id == 0 or fRecoParticle.charge == 0)  puppi_register = 0; // zero is neutral hadron
         if(fRecoParticle.id == 1 and fRecoParticle.charge != 0) puppi_register = fRecoParticle.charge; // from PV use the
         if(fRecoParticle.id == 2 and fRecoParticle.charge != 0) puppi_register = fRecoParticle.charge+5; // from NPV use the charge as key +5 as key
+
+        //MVhack!!!!
+        puppi_register = fRecoParticle.charge+5; // in HI all particles are from the primary vertex, also the bkg particles
+ 
         curPseudoJet.set_user_info( new PuppiUserInfo( puppi_register ) );
         // fill vector of pseudojets for internal references
         fPFParticles.push_back(curPseudoJet);
@@ -136,8 +145,34 @@ void PuppiContainer::getRMSAvg(int iOpt,std::vector<fastjet::PseudoJet> const &i
             pCharged = fPuppiAlgo[i1].isCharged(iOpt);
             pCone    = fPuppiAlgo[i1].coneSize (iOpt);
             double curVal = -1; 
-            if(!pCharged) curVal = goodVar(iConstits[i0],iParticles       ,pAlgo,pCone);
-            if( pCharged) curVal = goodVar(iConstits[i0],iChargedParticles,pAlgo,pCone);
+            
+            //check if particle falls within jet signal region
+            //if yes, set alpha to -1 --> MV: ??
+            // if no reco jets provided, no particles will be rejected
+            bool exclude = false;
+            //            std::cout << "fNExLJ: " << fNExLJ << " fExRadius: " << fExRadius << std::endl;
+            unsigned int njets = fNExLJ;
+            if(fNExLJ>fRecoJets.size()) njets = fRecoJets.size();
+            for (unsigned int i = 0; i < njets; i++) { //assuming jet signal candidates come pt-ordered. Hard-coded eta cut right now
+              auto fRecoJet = fRecoJets[i];
+              if(fRecoJet.pt < fExPtMin || std::abs(fRecoJet.eta)>2.) continue;
+              double pDEta = iConstits[i0].eta() - fRecoJet.eta;
+              double pDPhi = std::abs(iConstits[i0].phi() - fRecoJet.phi);
+              if(pDPhi > 2.*M_PI-pDPhi) pDPhi =  2.*M_PI-pDPhi;
+              double pDR2 = pDEta*pDEta+pDPhi*pDPhi;
+              //if(pDR2>0.) std::cout << "dr: " << sqrt(pDR2) << std::endl;
+              if(std::abs(pDR2)  <  fExRadius*fExRadius) {
+                //std::cout << "Excluding particle due to signal jet overlap" << std::endl;
+                exclude = true;
+                break;
+              }
+            }
+            if(exclude) curVal = -1.;
+            else {
+              if(!pCharged) curVal = goodVar(iConstits[i0],iParticles       ,pAlgo,pCone);
+              if( pCharged) curVal = goodVar(iConstits[i0],iChargedParticles,pAlgo,pCone);
+            }
+            
             //std::cout << "i1 = " << i1 << ", curVal = " << curVal << ", eta = " << iConstits[i0].eta() << ", pupID = " << pPupId << std::endl;
             fPuppiAlgo[i1].add(iConstits[i0],curVal,iOpt);
         }

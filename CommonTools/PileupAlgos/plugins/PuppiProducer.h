@@ -44,6 +44,7 @@ private:
 
 	edm::EDGetTokenT< CandidateView > tokenPFCandidates_;
 	edm::EDGetTokenT< VertexCollection > tokenVertices_;
+        edm::EDGetTokenT< CandidateView >    tokenJets_;
 	std::string     fPuppiName;
 	std::string     fPFName;	
 	std::string     fPVName;
@@ -58,6 +59,7 @@ private:
 	double fVtxZCut;
 	std::unique_ptr<PuppiContainer> fPuppiContainer;
 	std::vector<RecoObj> fRecoObjCollection;
+        std::vector<RecoObj> fRecoObjJetCollection;
         std::auto_ptr< PFOutputCollection >          fPuppiCandidates;
 	std::auto_ptr< PackedOutputCollection >      fPackedPuppiCandidates;
 };

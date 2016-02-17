@@ -44,7 +44,9 @@ PuppiProducer::PuppiProducer(const edm::ParameterSet& iConfig) {
     = consumes<CandidateView>(iConfig.getParameter<edm::InputTag>("candName"));
   tokenVertices_
     = consumes<VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexName"));
- 
+
+  tokenJets_
+    = consumes<CandidateView>(iConfig.getParameter<edm::InputTag>("srcJets"));
 
   produces<edm::ValueMap<float> > ();
   produces<edm::ValueMap<LorentzVector> > ();
@@ -85,6 +87,12 @@ void PuppiProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       if (!vtxIter->isFake() && vtxIter->ndof()>=fVtxNdofCut && fabs(vtxIter->z())<=fVtxZCut)
          npv++;
    }
+
+  // Get jet collection with candidate signal jets
+  edm::Handle<CandidateView> hJetProduct;
+  const CandidateView *pfJetCol = 0x0;
+  if(iEvent.getByToken(tokenJets_,hJetProduct))
+    pfJetCol = hJetProduct.product();
 
   //Fill the reco objects
   fRecoObjCollection.clear();
@@ -179,8 +187,22 @@ void PuppiProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     fRecoObjCollection.push_back(pReco);
       
   }
+  
+  //Fill the signal jet candidate reco objects
+  fRecoObjJetCollection.clear();
+  if(pfJetCol) {
+    for(CandidateView::const_iterator itPF = pfJetCol->begin(); itPF!=pfJetCol->end(); itPF++) {
+      RecoObj pReco;
+      pReco.pt  = itPF->pt();
+      pReco.eta = itPF->eta();
+      pReco.phi = itPF->phi();
+      pReco.m   = itPF->mass();
+      pReco.rapidity = itPF->rapidity();
+      fRecoObjJetCollection.push_back(pReco);
+    }
+  }
+  fPuppiContainer->initialize(fRecoObjCollection,fRecoObjJetCollection);
 
-  fPuppiContainer->initialize(fRecoObjCollection);
   fPuppiContainer->setNPV( npv );
 
   std::vector<double> lWeights;
