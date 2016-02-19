@@ -1,10 +1,9 @@
-
-
 import FWCore.ParameterSet.Config as cms
 from HeavyIonsAnalysis.JetAnalysis.patHeavyIonSequences_cff import patJetGenJetMatch, patJetPartonMatch, patJetCorrFactors, patJets
 from HeavyIonsAnalysis.JetAnalysis.inclusiveJetAnalyzer_cff import *
 from HeavyIonsAnalysis.JetAnalysis.bTaggers_cff import *
 from RecoJets.JetProducers.JetIDParams_cfi import *
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
 
 akCs4PFmatch = patJetGenJetMatch.clone(
     src = cms.InputTag("akCs4PFJets"),
@@ -175,6 +174,12 @@ akCs4PFpatJetsWithBtagging = patJets.clone(jetSource = cms.InputTag("akCs4PFJets
         # embedPFCandidates = True
         )
 
+akCs4PFNjettiness = Njettiness.clone(
+		    src = cms.InputTag("akCs4PFJets"),
+           	    R0  = cms.double( 0.4 )
+)
+akCs4PFpatJetsWithBtagging.userData.userFloats.src += ['akCs4PFNjettiness:tau1','akCs4PFNjettiness:tau2','akCs4PFNjettiness:tau3']
+
 akCs4PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akCs4PFpatJetsWithBtagging"),
                                                              genjetTag = 'ak4HiGenJets',
                                                              rParam = 0.4,
@@ -191,6 +196,7 @@ akCs4PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akCs4PFpa
                                                              doLifeTimeTagging = cms.untracked.bool(True),
                                                              doLifeTimeTaggingExtras = cms.untracked.bool(False),
                                                              bTagJetName = cms.untracked.string("akCs4PF"),
+                                                             jetName = cms.untracked.string("akCs4PF"),
                                                              genPtMin = cms.untracked.double(15),
                                                              hltTrgResults = cms.untracked.string('TriggerResults::'+'HISIGNAL'),
 							     doTower = cms.untracked.bool(True)
@@ -215,9 +221,11 @@ akCs4PFJetSequence_mc = cms.Sequence(
                                                   *
                                                   akCs4PFJetBtagging
                                                   *
-                                                  akCs4PFpatJetsWithBtagging
+						  akCs4PFNjettiness
                                                   *
-                                                  akCs4PFJetAnalyzer
+                                                  akCs4PFpatJetsWithBtagging
+						  *
+						  akCs4PFJetAnalyzer
                                                   )
 
 akCs4PFJetSequence_data = cms.Sequence(akCs4PFcorr
@@ -228,9 +236,11 @@ akCs4PFJetSequence_data = cms.Sequence(akCs4PFcorr
                                                     *
                                                     akCs4PFJetBtagging
                                                     *
+						    akCs4PFNjettiness
+                                                    *
                                                     akCs4PFpatJetsWithBtagging
                                                     *
-                                                    akCs4PFJetAnalyzer
+						    akCs4PFJetAnalyzer
                                                     )
 
 akCs4PFJetSequence_jec = cms.Sequence(akCs4PFJetSequence_mc)
