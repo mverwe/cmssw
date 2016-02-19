@@ -62,6 +62,8 @@ HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig)
   useQuality_ = iConfig.getUntrackedParameter<bool>("useQuality",1);
   trackQuality_ = iConfig.getUntrackedParameter<string>("trackQuality","highPurity");
 
+  jetName_ = iConfig.getUntrackedParameter<string>("jetName");
+
   isMC_ = iConfig.getUntrackedParameter<bool>("isMC",false);
   useHepMC_ = iConfig.getUntrackedParameter<bool> ("useHepMC",false);
   fillGenJets_ = iConfig.getUntrackedParameter<bool>("fillGenJets",false);
@@ -145,30 +147,20 @@ HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig)
     PositiveSoftPFMuonByPtBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("PositiveSoftPFMuonByPtBJetTags",(bTagJetName_+"PositiveSoftPFMuonByPtBJetTags")));
   }
 
-  //  cout<<" jet collection : "<<jetTag_<<endl;
   doSubEvent_ = 0;
 
   if(isMC_){
-    //     cout<<" genjet collection : "<<genjetTag_<<endl;
     genPtMin_ = iConfig.getUntrackedParameter<double>("genPtMin",10);
     doSubEvent_ = iConfig.getUntrackedParameter<bool>("doSubEvent",0);
   }
-
-
 }
-
-
 
 HiInclusiveJetAnalyzer::~HiInclusiveJetAnalyzer() { }
 
+void HiInclusiveJetAnalyzer::beginRun(const edm::Run& run,
+                                      const edm::EventSetup & es) {}
 
-
-void
-HiInclusiveJetAnalyzer::beginRun(const edm::Run& run,
-				 const edm::EventSetup & es) {}
-
-void
-HiInclusiveJetAnalyzer::beginJob() {
+void HiInclusiveJetAnalyzer::beginJob() {
 
   //string jetTagName = jetTag_.label()+"_tree";
   string jetTagTitle = jetTagLabel_.label()+" Jet Analysis Tree";
@@ -195,6 +187,10 @@ HiInclusiveJetAnalyzer::beginJob() {
   t->Branch("jtm",jets_.jtm,"jtm[nref]/F");
   t->Branch("jtarea",jets_.jtarea,"jtarea[nref]/F");
 
+  t->Branch("jttau1",jets_.jttau1,"jttau1[nref]/F");
+  t->Branch("jttau2",jets_.jttau2,"jttau2[nref]/F");
+  t->Branch("jttau3",jets_.jttau3,"jttau3[nref]/F");
+ 
   // jet ID information, jet composition
   if(doHiJetID_){
     t->Branch("discr_fr01", jets_.discr_fr01,"discr_fr01[nref]/F");
@@ -552,7 +548,6 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
     //iEvent.getByToken(NegativeSoftPFMuonByPtBJetTags_, jetTags_softMuneg);
     //iEvent.getByToken(PositiveSoftPFMuonByPtBJetTags_, jetTags_softMu);
   }
-
 
   // get tower information
   edm::Handle<CaloTowerCollection> towers;
@@ -1000,15 +995,17 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
     jets_.jtm[jets_.nref] = jet.mass();
     jets_.jtarea[jets_.nref] = jet.jetArea();
 
-    //Loop over the jet constituents
-    double sum = 0.;
-    for(auto daughter : jet.getJetConstituentsQuick()){
-      //auto part = static_cast<const reco::PFCandidate*>(daughter);
-      sum += daughter->pt();
-    }
-    Printf("jet pt: %f raw: %f sum pt: %f",jet.pt(),jets_.rawpt[jets_.nref],sum);
-      
+    jets_.jttau1[jets_.nref] = -999.;
+    jets_.jttau2[jets_.nref] = -999.;
+    jets_.jttau3[jets_.nref] = -999.;
+    
     if(usePat_){
+      if( (*patjets)[j].hasUserFloat(jetName_+"Njettiness:tau1") )
+        jets_.jttau1[jets_.nref] = (*patjets)[j].userFloat(jetName_+"Njettiness:tau1");
+      if( (*patjets)[j].hasUserFloat(jetName_+"Njettiness:tau2") )
+        jets_.jttau2[jets_.nref] = (*patjets)[j].userFloat(jetName_+"Njettiness:tau2");
+      if( (*patjets)[j].hasUserFloat(jetName_+"Njettiness:tau3") )
+        jets_.jttau3[jets_.nref] = (*patjets)[j].userFloat(jetName_+"Njettiness:tau3");
 
       if(doStandardJetID_){
 	jets_.fHPD[jets_.nref] = (*patjets)[j].jetID().fHPD;

@@ -80,18 +80,21 @@ private:
 
   // edm::InputTag   jetTag_, vtxTag_, genjetTag_, eventInfoTag_, L1gtReadout_, pfCandidateLabel_, trackTag_, matchTag_;
   edm::InputTag   jetTagLabel_;
-  edm::EDGetTokenT<std::vector<reco::Vertex> >         vtxTag_;
-  edm::EDGetTokenT<reco::JetView>              jetTag_;
-  edm::EDGetTokenT<pat::JetCollection>         jetTagPat_;
-  edm::EDGetTokenT<reco::JetView>              matchTag_;
-  edm::EDGetTokenT<pat::JetCollection>         matchTagPat_;
-  edm::EDGetTokenT<reco::PFCandidateCollection>         pfCandidateLabel_;
-  edm::EDGetTokenT<reco::TrackCollection>         trackTag_;
-  edm::EDGetTokenT<reco::GenParticleCollection>         genParticleSrc_;
-  edm::EDGetTokenT<std::vector<reco::GenJet> >         genjetTag_;
-  edm::EDGetTokenT<edm::HepMCProduct>         eventInfoTag_;
-  edm::EDGetTokenT<GenEventInfoProduct>  eventGenInfoTag_;
-  edm::EDGetTokenT< L1GlobalTriggerReadoutRecord >         L1gtReadout_;
+  edm::EDGetTokenT<std::vector<reco::Vertex> >     vtxTag_;
+  edm::EDGetTokenT<reco::JetView>                  jetTag_;
+  edm::EDGetTokenT<pat::JetCollection>             jetTagPat_;
+  edm::EDGetTokenT<reco::JetView>                  matchTag_;
+  edm::EDGetTokenT<pat::JetCollection>             matchTagPat_;
+  edm::EDGetTokenT<reco::PFCandidateCollection>    pfCandidateLabel_;
+  edm::EDGetTokenT<reco::TrackCollection>          trackTag_;
+  edm::EDGetTokenT<reco::GenParticleCollection>    genParticleSrc_;
+  edm::EDGetTokenT<std::vector<reco::GenJet> >     genjetTag_;
+  edm::EDGetTokenT<edm::HepMCProduct>              eventInfoTag_;
+  edm::EDGetTokenT<GenEventInfoProduct>            eventGenInfoTag_;
+  edm::EDGetTokenT< L1GlobalTriggerReadoutRecord > L1gtReadout_;
+
+  std::string jetName_; //used as prefix for jet structures
+  
   // edm::InputTag HcalRecHitHFSrc_;
   // edm::InputTag HcalRecHitHBHESrc_;
   // edm::InputTag EBSrc_;
@@ -168,7 +171,7 @@ private:
   edm::EDGetTokenT<reco::JetTagCollection> PositiveCombinedSecondaryVertexBJetTags_;
   edm::EDGetTokenT<reco::JetTagCollection> NegativeSoftPFMuonByPtBJetTags_;
   edm::EDGetTokenT<reco::JetTagCollection> PositiveSoftPFMuonByPtBJetTags_;
-
+  
   static const int MAXJETS = 500;
   static const int MAXTRACKS = 5000;
   static const int MAXHLTBITS = 5000;
@@ -194,6 +197,10 @@ private:
     float jtm[MAXJETS];
     float jtarea[MAXJETS];
 
+    float jttau1[MAXJETS];
+    float jttau2[MAXJETS];
+    float jttau3[MAXJETS];
+    
     float trackMax[MAXJETS];
     float trackSum[MAXJETS];
     int trackN[MAXJETS];
