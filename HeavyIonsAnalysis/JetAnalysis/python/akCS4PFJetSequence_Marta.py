@@ -19,5 +19,6 @@ akCs4PFJets = ak8PFJetsCS.clone(
     rho       = cms.InputTag('hiFJRhoProducer','mapToRho'),
     rhom      = cms.InputTag('hiFJRhoProducer','mapToRhoM'),
     csAlpha   = cms.double(1.),
-    writeCompound = cms.bool(True)
+    writeJetsWithConst = cms.bool(True)
+    #writeCompound = cms.bool(True)
     )
