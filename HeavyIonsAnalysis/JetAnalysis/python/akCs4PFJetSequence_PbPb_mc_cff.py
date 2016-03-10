@@ -205,7 +205,8 @@ akCs4PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akCs4PFpa
                                                              genPtMin = cms.untracked.double(15),
                                                              hltTrgResults = cms.untracked.string('TriggerResults::'+'HISIGNAL'),
 							     doTower = cms.untracked.bool(True),
-							     doGenTaus = True
+							     doGenTaus = True#,
+                                                             #jetPtMin = cms.double(0)
                                                              #gentau1 = cms.InputTag("ak4HiGenNjettiness","tau1"),
                                                              #gentau2 = cms.InputTag("ak4HiGenNjettiness","tau2"),
                                                              #gentau3 = cms.InputTag("ak4HiGenNjettiness","tau3")
