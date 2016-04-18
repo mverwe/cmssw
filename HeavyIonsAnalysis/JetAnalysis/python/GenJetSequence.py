@@ -7,6 +7,7 @@ from HeavyIonsAnalysis.JetAnalysis.akSoftDrop4GenJets_cfi import akSoftDrop4GenJ
 
 genParticlesForJetsSignal = genParticlesForJets.clone(src = cms.InputTag("hiSignalGenParticles"))
 akSoftDrop4GenJets.src            = cms.InputTag("genParticlesForJetsSignal")
+akSoftDrop4GenJets.zcut           = cms.double(0.05) #0.1)
 
 akSoftDrop1GenJets = akSoftDrop4GenJets.clone(rParam = cms.double(0.1) , R0 = cms.double(0.1))
 akSoftDrop2GenJets = akSoftDrop4GenJets.clone(rParam = cms.double(0.2) , R0 = cms.double(0.2))
