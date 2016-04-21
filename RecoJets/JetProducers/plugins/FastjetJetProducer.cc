@@ -501,6 +501,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
 
     if ( useSoftDrop_ ) {
       fastjet::contrib::SoftDrop * sd = new fastjet::contrib::SoftDrop(beta_, zCut_, R0_ );
+      sd->set_verbose_structure(true);
       transformers.push_back( transformer_ptr(sd) );
     }
 
@@ -534,6 +535,18 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
 
       if ( passed ) {
 	fjJets_.push_back( transformedJet );
+      }
+
+      if(passed && useSoftDrop_) {
+        double sym = transformedJet.structure_of<fastjet::contrib::SoftDrop>().symmetry();
+        std::cout << "sym: " << sym << std::endl;
+        int ndrop = transformedJet.structure_of<fastjet::contrib::SoftDrop>().dropped_count();
+        std::cout << "#dropped branches: " << ndrop << std::endl;
+            std::vector<double> dropped_symmetry = transformedJet.structure_of<fastjet::contrib::SoftDrop>().dropped_symmetry();
+            std::cout << "dropped_symmetry.size() " << dropped_symmetry.size() << std::endl;
+            for ( std::vector<double>::const_iterator dsym = dropped_symmetry.begin();
+                  dsym != dropped_symmetry.end(); ++dsym )
+              std::cout << "dropped symmetry: " << (*dsym) << std::endl;
       }
     }
   }
