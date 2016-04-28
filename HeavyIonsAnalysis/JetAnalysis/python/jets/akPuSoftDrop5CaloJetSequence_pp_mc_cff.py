@@ -199,7 +199,13 @@ akPuSoftDrop5CaloJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag(
 							     doSubJets = cms.untracked.bool(True),
                                                              doGenSubJets = cms.untracked.bool(True),     
                                                              subjetGenTag = cms.untracked.InputTag("akSoftDrop5GenJets"),
-                                                             doGenTaus = True
+                                                             doGenTaus = False,
+                                                             genTau1 = cms.InputTag("akSoftDrop5GenNjettiness","tau1"),
+                                                             genTau2 = cms.InputTag("akSoftDrop5GenNjettiness","tau2"),
+                                                             genTau3 = cms.InputTag("akSoftDrop5GenNjettiness","tau3"),
+                                                             doGenSym = True,
+                                                             genSym = cms.InputTag("akSoftDrop5GenJets","sym"),
+                                                             genDroppedBranches = cms.InputTag("akSoftDrop5GenJets","droppedBranches")
                                                              )
 
 akPuSoftDrop5CaloJetSequence_mc = cms.Sequence(
@@ -223,7 +229,7 @@ akPuSoftDrop5CaloJetSequence_mc = cms.Sequence(
                                                   *
                                                   akPuSoftDrop5CaloJetBtagging
                                                   *
-                                                  akPuSoftDrop5CaloNjettiness
+                                                  akPuSoftDrop5CaloNjettiness #No constituents for calo jets in pp. Must be removed for pp calo jets but I'm not sure how to do this transparently (Marta)
                                                   *
                                                   akPuSoftDrop5CalopatJetsWithBtagging
                                                   *
@@ -249,3 +255,5 @@ akPuSoftDrop5CaloJetSequence_jec = cms.Sequence(akPuSoftDrop5CaloJetSequence_mc)
 akPuSoftDrop5CaloJetSequence_mb = cms.Sequence(akPuSoftDrop5CaloJetSequence_mc)
 
 akPuSoftDrop5CaloJetSequence = cms.Sequence(akPuSoftDrop5CaloJetSequence_mc)
+akPuSoftDrop5CalopatJetsWithBtagging.userData.userFloats.src += ['akPuSoftDrop5CaloJets:sym']
+akPuSoftDrop5CalopatJetsWithBtagging.userData.userInts.src += ['akPuSoftDrop5CaloJets:droppedBranches']

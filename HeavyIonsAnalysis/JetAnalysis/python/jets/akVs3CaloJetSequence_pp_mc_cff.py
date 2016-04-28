@@ -199,7 +199,13 @@ akVs3CaloJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akVs3Ca
 							     doSubJets = cms.untracked.bool(False),
                                                              doGenSubJets = cms.untracked.bool(False),     
                                                              subjetGenTag = cms.untracked.InputTag("ak3GenJets"),
-                                                             doGenTaus = True
+                                                             doGenTaus = True,
+                                                             genTau1 = cms.InputTag("ak3GenNjettiness","tau1"),
+                                                             genTau2 = cms.InputTag("ak3GenNjettiness","tau2"),
+                                                             genTau3 = cms.InputTag("ak3GenNjettiness","tau3"),
+                                                             doGenSym = False,
+                                                             genSym = cms.InputTag("ak3GenJets","sym"),
+                                                             genDroppedBranches = cms.InputTag("ak3GenJets","droppedBranches")
                                                              )
 
 akVs3CaloJetSequence_mc = cms.Sequence(
@@ -223,7 +229,7 @@ akVs3CaloJetSequence_mc = cms.Sequence(
                                                   *
                                                   akVs3CaloJetBtagging
                                                   *
-                                                  akVs3CaloNjettiness
+                                                  akVs3CaloNjettiness #No constituents for calo jets in pp. Must be removed for pp calo jets but I'm not sure how to do this transparently (Marta)
                                                   *
                                                   akVs3CalopatJetsWithBtagging
                                                   *

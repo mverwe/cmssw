@@ -199,7 +199,13 @@ ak6PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("ak6PFpatJet
 							     doSubJets = cms.untracked.bool(False),
                                                              doGenSubJets = cms.untracked.bool(False),     
                                                              subjetGenTag = cms.untracked.InputTag("ak6GenJets"),
-                                                             doGenTaus = True
+                                                             doGenTaus = True,
+                                                             genTau1 = cms.InputTag("ak6GenNjettiness","tau1"),
+                                                             genTau2 = cms.InputTag("ak6GenNjettiness","tau2"),
+                                                             genTau3 = cms.InputTag("ak6GenNjettiness","tau3"),
+                                                             doGenSym = False,
+                                                             genSym = cms.InputTag("ak6GenJets","sym"),
+                                                             genDroppedBranches = cms.InputTag("ak6GenJets","droppedBranches")
                                                              )
 
 ak6PFJetSequence_mc = cms.Sequence(
@@ -223,7 +229,7 @@ ak6PFJetSequence_mc = cms.Sequence(
                                                   *
                                                   ak6PFJetBtagging
                                                   *
-                                                  ak6PFNjettiness
+                                                  ak6PFNjettiness #No constituents for calo jets in pp. Must be removed for pp calo jets but I'm not sure how to do this transparently (Marta)
                                                   *
                                                   ak6PFpatJetsWithBtagging
                                                   *

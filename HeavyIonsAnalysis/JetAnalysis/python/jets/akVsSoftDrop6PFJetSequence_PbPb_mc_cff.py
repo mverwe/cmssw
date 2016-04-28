@@ -199,7 +199,13 @@ akVsSoftDrop6PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("a
 							     doSubJets = cms.untracked.bool(True),
                                                              doGenSubJets = cms.untracked.bool(True),     
                                                              subjetGenTag = cms.untracked.InputTag("akSoftDrop6GenJets"),
-                                                             doGenTaus = True
+                                                             doGenTaus = False,
+                                                             genTau1 = cms.InputTag("akSoftDrop6GenNjettiness","tau1"),
+                                                             genTau2 = cms.InputTag("akSoftDrop6GenNjettiness","tau2"),
+                                                             genTau3 = cms.InputTag("akSoftDrop6GenNjettiness","tau3"),
+                                                             doGenSym = True,
+                                                             genSym = cms.InputTag("akSoftDrop6GenJets","sym"),
+                                                             genDroppedBranches = cms.InputTag("akSoftDrop6GenJets","droppedBranches")
                                                              )
 
 akVsSoftDrop6PFJetSequence_mc = cms.Sequence(
@@ -223,7 +229,7 @@ akVsSoftDrop6PFJetSequence_mc = cms.Sequence(
                                                   *
                                                   akVsSoftDrop6PFJetBtagging
                                                   *
-                                                  akVsSoftDrop6PFNjettiness
+                                                  akVsSoftDrop6PFNjettiness #No constituents for calo jets in pp. Must be removed for pp calo jets but I'm not sure how to do this transparently (Marta)
                                                   *
                                                   akVsSoftDrop6PFpatJetsWithBtagging
                                                   *
@@ -249,3 +255,5 @@ akVsSoftDrop6PFJetSequence_jec = cms.Sequence(akVsSoftDrop6PFJetSequence_mc)
 akVsSoftDrop6PFJetSequence_mb = cms.Sequence(akVsSoftDrop6PFJetSequence_mc)
 
 akVsSoftDrop6PFJetSequence = cms.Sequence(akVsSoftDrop6PFJetSequence_mc)
+akVsSoftDrop6PFpatJetsWithBtagging.userData.userFloats.src += ['akVsSoftDrop6PFJets:sym']
+akVsSoftDrop6PFpatJetsWithBtagging.userData.userInts.src += ['akVsSoftDrop6PFJets:droppedBranches']

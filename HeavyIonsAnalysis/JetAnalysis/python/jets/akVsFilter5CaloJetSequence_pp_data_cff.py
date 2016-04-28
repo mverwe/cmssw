@@ -199,7 +199,13 @@ akVsFilter5CaloJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("a
 							     doSubJets = cms.untracked.bool(True),
                                                              doGenSubJets = cms.untracked.bool(False),     
                                                              subjetGenTag = cms.untracked.InputTag("akFilter5GenJets"),
-                                                             doGenTaus = False
+                                                             doGenTaus = False,
+                                                             genTau1 = cms.InputTag("akFilter5GenNjettiness","tau1"),
+                                                             genTau2 = cms.InputTag("akFilter5GenNjettiness","tau2"),
+                                                             genTau3 = cms.InputTag("akFilter5GenNjettiness","tau3"),
+                                                             doGenSym = False,
+                                                             genSym = cms.InputTag("akFilter5GenJets","sym"),
+                                                             genDroppedBranches = cms.InputTag("akFilter5GenJets","droppedBranches")
                                                              )
 
 akVsFilter5CaloJetSequence_mc = cms.Sequence(
@@ -223,7 +229,7 @@ akVsFilter5CaloJetSequence_mc = cms.Sequence(
                                                   *
                                                   akVsFilter5CaloJetBtagging
                                                   *
-                                                  akVsFilter5CaloNjettiness
+                                                  akVsFilter5CaloNjettiness #No constituents for calo jets in pp. Must be removed for pp calo jets but I'm not sure how to do this transparently (Marta)
                                                   *
                                                   akVsFilter5CalopatJetsWithBtagging
                                                   *
