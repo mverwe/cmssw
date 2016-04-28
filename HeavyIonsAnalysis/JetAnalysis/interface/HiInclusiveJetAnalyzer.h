@@ -42,8 +42,6 @@
 */
 
 
-
-
 class HiInclusiveJetAnalyzer : public edm::EDAnalyzer {
 public:
 
@@ -96,12 +94,11 @@ private:
   edm::EDGetTokenT<pat::JetCollection>         jetTagPat_;
   edm::EDGetTokenT<reco::JetView>              matchTag_;
   edm::EDGetTokenT<pat::JetCollection>         matchTagPat_;
-  edm::EDGetTokenT<reco::JetView>              subjetGenTag_;
   edm::EDGetTokenT<reco::PFCandidateCollection>         pfCandidateLabel_;
   edm::EDGetTokenT<reco::TrackCollection>         trackTag_;
   edm::EDGetTokenT<reco::GenParticleCollection>         genParticleSrc_;
-  edm::EDGetTokenT<std::vector<reco::GenJet> >         genjetTag_;
-  //edm::EDGetTokenT<edm::View<reco::Jet>>         genjetTag_;
+  //edm::EDGetTokenT<std::vector<reco::GenJet> >         genjetTag_;
+  edm::EDGetTokenT<edm::View<reco::GenJet>>         genjetTag_;
   edm::EDGetTokenT<edm::HepMCProduct>         eventInfoTag_;
   edm::EDGetTokenT<GenEventInfoProduct>  eventGenInfoTag_;
   edm::EDGetTokenT< L1GlobalTriggerReadoutRecord >         L1gtReadout_;
@@ -112,10 +109,15 @@ private:
   // edm::InputTag genParticleSrc_;
 
   std::string jetName_; //used as prefix for jet structures
-  edm::Handle<reco::JetView> gensubjets_;
-  /* edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau1_; */
-  /* edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau2_; */
-  /* edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau3_; */
+  edm::EDGetTokenT<edm::View<reco::Jet>>   subjetGenTag_;
+  edm::Handle<edm::View<reco::Jet>>        gensubjets_;
+  edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau1_;
+  edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau2_;
+  edm::EDGetTokenT< edm::ValueMap<float> > tokenGenTau3_;
+  edm::EDGetTokenT< edm::ValueMap<float> > tokenGenSym_;
+  edm::Handle<edm::ValueMap<float> > genSymVM_;
+  edm::EDGetTokenT< edm::ValueMap<int> > tokenGenDroppedBranches_;
+  edm::Handle<edm::ValueMap<int> > genDroppedBranchesVM_;
   
   // towers
   edm::EDGetTokenT<CaloTowerCollection> TowerSrc_;
@@ -150,6 +152,7 @@ private:
   double hardPtMin_;
   double jetPtMin_;
   bool doGenTaus_;
+  bool doGenSym_;
   bool doSubJets_;
   bool doGenSubJets_;
 
@@ -228,6 +231,9 @@ private:
     float jttau1[MAXJETS];
     float jttau2[MAXJETS];
     float jttau3[MAXJETS];
+
+    float jtsym[MAXJETS];
+    int   jtdroppedBranches[MAXJETS];
 
     std::vector<std::vector<float>> jtSubJetPt;
     std::vector<std::vector<float>> jtSubJetEta;
@@ -386,6 +392,8 @@ private:
     float reftau1[MAXJETS];
     float reftau2[MAXJETS];
     float reftau3[MAXJETS];
+    float refsym[MAXJETS];
+    int   refdroppedBranches[MAXJETS];
     float refdphijt[MAXJETS];
     float refdrjt[MAXJETS];
     float refparton_pt[MAXJETS];
@@ -427,6 +435,8 @@ private:
     std::vector<std::vector<float>> genSubJetPhi;
     std::vector<std::vector<float>> genSubJetM;
     std::vector<std::vector<float>> genSubJetArea;
+    float gensym[MAXJETS];
+    int   gendroppedBranches[MAXJETS];
     
     // hlt
     int nHLTBit;
