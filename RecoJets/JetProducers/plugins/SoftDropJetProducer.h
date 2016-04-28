@@ -28,7 +28,8 @@ namespace cms
     //    typedef fastjet::ClusterSequencePtr         transformer;
     //typedef std::unique_ptr<transformer> transformer_ptr;
     typedef std::vector<ClusterSequencePtr> clusterSequence_coll;
-
+    typedef std::vector<JetDefPtr> jetDefinition_coll;
+    
     SoftDropJetProducer(const edm::ParameterSet& ps);
 
     virtual ~SoftDropJetProducer() {}
@@ -36,7 +37,9 @@ namespace cms
     virtual void produce( edm::Event & iEvent, const edm::EventSetup & iSetup );
 
   protected:
-    void writeSoftDropJets(  edm::Event & iEvent, edm::EventSetup const& iSetup);
+    virtual void output(  edm::Event & iEvent, edm::EventSetup const& iSetup );
+    template< typename T>
+      void writeSoftDropJets(  edm::Event & iEvent, edm::EventSetup const& iSetup);
     
   protected:
 
@@ -49,6 +52,20 @@ namespace cms
 
     JetDefPtr                       fjJetDefinitionRecluster_; // fastjet jet definition for reclustering
     ClusterSequencePtr              fjClusterSeqRecluster_;    // fastjet cluster sequence for reclustering
+
+    clusterSequence_coll clusterSequences;
+    jetDefinition_coll jetDefinitions;
+
+    std::vector<float>                      lSym; //sym for each jet
+    std::vector<int>                        lDroppedBranches; //number of dropped branches
+    std::vector<std::vector<double>>        lDroppedSym; //dropped sym for each jet
+    
+  private:
+    // tokens for the data access
+    edm::EDGetTokenT<reco::CandidateView> input_candidateview_token_SD_;
+    edm::EDGetTokenT<std::vector<edm::FwdPtr<reco::PFCandidate> > > input_candidatefwdptr_token_SD_;
+    edm::EDGetTokenT<std::vector<edm::FwdPtr<pat::PackedCandidate> > > input_packedcandidatefwdptr_token_SD_;
+    
   };
 }
 #endif

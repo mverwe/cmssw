@@ -536,7 +536,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
       if ( passed ) {
 	fjJets_.push_back( transformedJet );
       }
-
+/*
       if(passed && useSoftDrop_) {
         double sym = transformedJet.structure_of<fastjet::contrib::SoftDrop>().symmetry();
         std::cout << "sym: " << sym << std::endl;
@@ -548,6 +548,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
                   dsym != dropped_symmetry.end(); ++dsym )
               std::cout << "dropped symmetry: " << (*dsym) << std::endl;
       }
+*/
     }
   }
 
