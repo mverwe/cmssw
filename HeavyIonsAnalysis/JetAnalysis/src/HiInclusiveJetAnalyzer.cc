@@ -456,8 +456,8 @@ HiInclusiveJetAnalyzer::beginJob() {
         t->Branch("genSubJetEta",&jets_.genSubJetEta);
         t->Branch("genSubJetPhi",&jets_.genSubJetPhi);
         t->Branch("genSubJetM",&jets_.genSubJetM);
-        t->Branch("gensym",jets_.gensym,"gensym[nref]/F");
-        t->Branch("gendroppedBranches",jets_.gendroppedBranches,"gendroppedBranches[nref]/I");
+        t->Branch("gensym",jets_.gensym,"gensym[ngen]/F");
+        t->Branch("gendroppedBranches",jets_.gendroppedBranches,"gendroppedBranches[ngen]/I");
       }
 
       if(doSubEvent_){
@@ -1060,6 +1060,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
 
       if( (*patjets)[j].hasUserFloat(jetName_+"Jets:sym") )
         jets_.jtsym[jets_.nref] = (*patjets)[j].userFloat(jetName_+"Jets:sym");
+      //std::cout << "jets_.nref: " << jets_.nref << "  jtsym: " << jets_.jtsym[jets_.nref] << endl;
       if( (*patjets)[j].hasUserInt(jetName_+"Jets:droppedBranches") )
         jets_.jtdroppedBranches[jets_.nref] = (*patjets)[j].userInt(jetName_+"Jets:droppedBranches");
 
@@ -1170,6 +1171,8 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
           jets_.refetaG[jets_.nref] = -999.;
           jets_.refphiG[jets_.nref] = -999.;
           jets_.refmG[jets_.nref]   = -999.;
+          jets_.refsym[jets_.nref]  = -999.;
+          jets_.refdroppedBranches[jets_.nref]  = -999;
 
           std::vector<float> sjpt;
           std::vector<float> sjeta;
@@ -1305,6 +1308,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
       
       // threshold to reduce size of output in minbias PbPb
       if(genjet_pt>genPtMin_){
+        //std::cout << "genjet_pt: " << genjet_pt << std::endl;
 	jets_.genpt[jets_.ngen] = genjet_pt;
 	jets_.geneta[jets_.ngen] = genjet.eta();
 	jets_.genphi[jets_.ngen] = genjet.phi();
@@ -1575,12 +1579,14 @@ void HiInclusiveJetAnalyzer::analyzeSubjets(const reco::Jet jet) {
       sjphi.push_back(dp.phi());
       sjm.push_back(dp.mass());
     }
+    //if(jet.numberOfDaughters()>1) std::cout << "zg: " << std::min(sjpt[0],sjpt[1])/(sjpt[0]+sjpt[1]) << std::endl;
   } else {
     sjpt.push_back(-999.);
     sjeta.push_back(-999.);
     sjphi.push_back(-999.);
     sjm.push_back(-999.);
   }
+  //  std::cout << "jets_.jtSubJetPt.size() " << jets_.jtSubJetPt.size() << "  jets_.nref: " << jets_.nref << std::endl;
   jets_.jtSubJetPt.push_back(sjpt);
   jets_.jtSubJetEta.push_back(sjeta);
   jets_.jtSubJetPhi.push_back(sjphi);
@@ -1620,8 +1626,8 @@ void HiInclusiveJetAnalyzer::analyzeRefSubjets(const reco::GenJet jet) {
   jets_.refetaG[jets_.nref] = -999.;
   jets_.refphiG[jets_.nref] = -999.;
   jets_.refmG[jets_.nref]   = -999.;
-  jets_.refsym[jets_.ngen]  = -999.;
-  jets_.refdroppedBranches[jets_.ngen]  = -999;
+  jets_.refsym[jets_.nref]  = -999.;
+  jets_.refdroppedBranches[jets_.nref]  = -999;
 
   std::vector<float> sjpt;
   std::vector<float> sjeta;
@@ -1653,6 +1659,8 @@ void HiInclusiveJetAnalyzer::analyzeRefSubjets(const reco::GenJet jet) {
       int db = (*genDroppedBranchesVM_)[genJetPtr];
       jets_.refdroppedBranches[jets_.nref] = db;
     }
+    //std::cout << "Ref jet ptG: " << jets_.refptG[jets_.nref] << " refsym: " << jets_.refsym[jets_.nref] << std::endl;
+    //if(mjet.numberOfDaughters()>1) std::cout << "refzg: " << std::min(sjpt[0],sjpt[1])/(sjpt[0]+sjpt[1]) << std::endl;
   }
   else {
     sjpt.push_back(-999.);
@@ -1691,6 +1699,7 @@ void HiInclusiveJetAnalyzer::analyzeGenSubjets(const reco::GenJet jet) {
   std::vector<float> sjarea;
   if(imatch>-1 && dr<0.4) {
     const reco::Jet& mjet =  (*gensubjets_)[imatch];
+    //std::cout << "genjet_ptG: " << mjet.pt() << std::endl;
     jets_.genptG[jets_.ngen]  = mjet.pt();
     jets_.genetaG[jets_.ngen] = mjet.eta();
     jets_.genphiG[jets_.ngen] = mjet.phi();
@@ -1705,17 +1714,20 @@ void HiInclusiveJetAnalyzer::analyzeGenSubjets(const reco::GenJet jet) {
         sjm.push_back(dp.mass());
         //sjarea.push_back(dp.castTo<reco::JetRef>()->jetArea());
       }
+      //if(jet.numberOfDaughters()>1) std::cout << "zg: " << std::min(sjpt[0],sjpt[1])/(sjpt[0]+sjpt[1]) << std::endl;
     }
 
     Ptr<reco::Jet> genJetPtr = gensubjets_->ptrAt(imatch);
     if(genSymVM_.isValid()) {
       float gensym = (*genSymVM_)[genJetPtr];
       jets_.gensym[jets_.ngen] = gensym;
+      //std::cout << "gensym " << gensym << std::endl;
     }
 
     if(genDroppedBranchesVM_.isValid()) {
       int db = (*genDroppedBranchesVM_)[genJetPtr];
       jets_.gendroppedBranches[jets_.ngen] = db;
+      //std::cout << "genDroppedBranches " << db << std::endl;
     }
   }
   else {    

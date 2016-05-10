@@ -36,7 +36,7 @@ SoftDropJetProducer::SoftDropJetProducer(edm::ParameterSet const& iConfig):
 
   produces<edm::ValueMap<float> > ("sym");
   produces<edm::ValueMap<int> > ("droppedBranches");
-  //produces<edm::ValueMap<std::vector<double>> > ("droppedSym");
+  produces<edm::ValueMap<std::vector<double>> > ("droppedSym");
   
 }
 
@@ -287,7 +287,8 @@ void SoftDropJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup con
     //std::vector<fastjet::PseudoJet> tempJets = fastjet::sorted_by_pt(clusterSequences[clusterSequences.size()]->inclusive_jets(jetPtMin_));
     if(tempJets.size()<1) continue;
     //std::cout << "got reclusted CA jet" << std::endl;
-    
+    //std::cout << "tempJets.size() " << tempJets.size() << std::endl;   
+ 
     fastjet::contrib::SoftDrop * sd = new fastjet::contrib::SoftDrop(beta_, zCut_, R0_ );
     sd->set_verbose_structure(true);
 
@@ -300,21 +301,33 @@ void SoftDropJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup con
     // if(!transformedJet.has_valid_cluster_sequence()) {
     //   std::cout << "transformedJet does not have a valid cluster sequence" << std::endl;
     // }
-
+    //std::cout << "orig jet pt: " << transformedJet.perp() << std::endl;
     transformedJet = (*sd)(transformedJet);
     fjJets_.push_back( transformedJet ); //put CA reclusterd jet after softDrop into vector which will be written to event
 
     double sym = transformedJet.structure_of<fastjet::contrib::SoftDrop>().symmetry();
     int ndrop = transformedJet.structure_of<fastjet::contrib::SoftDrop>().dropped_count();
     std::vector<double> dropped_symmetry = transformedJet.structure_of<fastjet::contrib::SoftDrop>().dropped_symmetry();
-    /*
-    std::cout << "sym: " << sym << std::endl;
-    std::cout << "#dropped branches: " << ndrop << std::endl;
-    std::cout << "dropped_symmetry.size() " << dropped_symmetry.size() << std::endl;
-    for ( std::vector<double>::const_iterator dsym = dropped_symmetry.begin();
-          dsym != dropped_symmetry.end(); ++dsym )
-      std::cout << "dropped symmetry: " << (*dsym) << std::endl;
-    */
+  
+    // //DEBUGGING BEGIN 
+    // std::cout << "SoftDropProducer: " << moduleLabel_ << std::endl; 
+    // std::cout << "sym: " << sym << std::endl;
+    // std::cout << "#dropped branches: " << ndrop << std::endl;
+    // std::cout << "dropped_symmetry.size() " << dropped_symmetry.size() << std::endl;
+    // for ( std::vector<double>::const_iterator dsym = dropped_symmetry.begin();
+    //       dsym != dropped_symmetry.end(); ++dsym )
+    //   std::cout << "dropped symmetry: " << (*dsym) << std::endl;
+    
+    // std::vector<fastjet::PseudoJet> constituents;
+    // if ( transformedJet.has_pieces() )
+    //   constituents = transformedJet.pieces();
+    // std::vector<fastjet::PseudoJet>::const_iterator itSubJetBegin = constituents.begin(), itSubJet = itSubJetBegin, itSubJetEnd = constituents.end();
+    // for (; itSubJet != itSubJetEnd; ++itSubJet ){
+    //   fastjet::PseudoJet const & subjet = *itSubJet;
+    //   std::cout << "subjet # " << (itSubJet - itSubJetBegin) << ": Pt = " << subjet.pt() << std::endl;
+    // }
+    // //DEBUGGING END
+
     lSym.push_back(sym);
     lDroppedBranches.push_back(ndrop);
     lDroppedSym.push_back(dropped_symmetry);
@@ -483,11 +496,11 @@ void SoftDropJetProducer::writeSoftDropJets(  edm::Event & iEvent, edm::EventSet
   lDroppedBranchesFiller.fill();
   iEvent.put(lDroppedBranchesOut,"droppedBranches");
 
-  // std::auto_ptr<edm::ValueMap<std::vector<double>> > lDroppedSymOut(new edm::ValueMap<std::vector<double>>());
-  // edm::ValueMap<std::vector<double>>::Filler  lDroppedSymFiller(*lDroppedSymOut);
-  // lDroppedSymFiller.insert(jetHandleAfterPut,lDroppedSym.begin(),lDroppedSym.end());
-  // lDroppedSymFiller.fill();
-  // iEvent.put(lDroppedSymOut,"droppedSym");
+  std::auto_ptr<edm::ValueMap<std::vector<double>> > lDroppedSymOut(new edm::ValueMap<std::vector<double>>());
+  edm::ValueMap<std::vector<double>>::Filler  lDroppedSymFiller(*lDroppedSymOut);
+  lDroppedSymFiller.insert(jetHandleAfterPut,lDroppedSym.begin(),lDroppedSym.end());
+  lDroppedSymFiller.fill();
+  iEvent.put(lDroppedSymOut,"droppedSym");
   
   
 }
