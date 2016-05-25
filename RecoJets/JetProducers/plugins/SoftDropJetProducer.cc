@@ -3,6 +3,11 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "RecoJets/JetProducers/interface/JetSpecific.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/Common/interface/AssociationVector.h"
+#include "DataFormats/JetReco/interface/JetCollection.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/Common/interface/RefToBase.h"
+#include "DataFormats/Common/interface/RefVector.h"
 
 #include "fastjet/contrib/SoftDrop.hh"
 
@@ -36,8 +41,9 @@ SoftDropJetProducer::SoftDropJetProducer(edm::ParameterSet const& iConfig):
 
   produces<edm::ValueMap<float> > ("sym");
   produces<edm::ValueMap<int> > ("droppedBranches");
-  produces<edm::ValueMap<std::vector<double>> > ("droppedSym");
-  
+  //produces<edm::ValueMap<std::vector<double>> > ("droppedSym");
+  //produces<edm::AssociationVector<reco::JetRefBaseProd,std::vector<double>> > ("droppedSym");
+  //produces<edm::AssociationVector<std::vector<double> > ("droppedSym");  
 }
 
 //______________________________________________________________________________
@@ -496,11 +502,19 @@ void SoftDropJetProducer::writeSoftDropJets(  edm::Event & iEvent, edm::EventSet
   lDroppedBranchesFiller.fill();
   iEvent.put(lDroppedBranchesOut,"droppedBranches");
 
-  std::auto_ptr<edm::ValueMap<std::vector<double>> > lDroppedSymOut(new edm::ValueMap<std::vector<double>>());
-  edm::ValueMap<std::vector<double>>::Filler  lDroppedSymFiller(*lDroppedSymOut);
-  lDroppedSymFiller.insert(jetHandleAfterPut,lDroppedSym.begin(),lDroppedSym.end());
-  lDroppedSymFiller.fill();
-  iEvent.put(lDroppedSymOut,"droppedSym");
+  //edm::AssociationVector<reco::JetRefBaseProd,std::vector<double>> >
+  //edm::Association<std::vector<double>> lDroppedSymOut(new edm::Association<std::vector<double>>());
+  //edm::Association<std::vector<double>>::Filler lDroppedSymFiller(*lDroppedSymOut);
+  //lDroppedSymFiller.insert(jetHandleAfterPut,lDroppedSym.begin(),lDroppedSym.end());
+  //lDroppedSymFiller.fill();
+  //iEvent.put(lDroppedSymOut,"droppedSym");
+
+
+  // std::auto_ptr<edm::ValueMap<std::vector<double>> > lDroppedSymOut(new edm::ValueMap<std::vector<double>>());
+  // edm::ValueMap<std::vector<double>>::Filler  lDroppedSymFiller(*lDroppedSymOut);
+  // lDroppedSymFiller.insert(jetHandleAfterPut,lDroppedSym.begin(),lDroppedSym.end());
+  // lDroppedSymFiller.fill();
+  // iEvent.put(lDroppedSymOut,"droppedSym");
   
   
 }
