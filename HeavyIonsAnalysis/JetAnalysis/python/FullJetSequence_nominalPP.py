@@ -28,26 +28,26 @@ ak5GenNjettiness = Njettiness.clone(
 from HeavyIonsAnalysis.JetAnalysis.akSoftDrop4PFJets_cfi import akSoftDrop4PFJets, akSoftDropCh4PFJets
 from RecoJets.JetProducers.PFJetParameters_cfi import *
 from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
-#akSoftDrop4PFJets = cms.EDProducer(
-#    "FastjetJetProducer",
-#    PFJetParameters,
-#    AnomalousCellParameters,
-#    jetAlgorithm = cms.string("AntiKt"),
-#    rParam       = cms.double(0.4),
-#    useSoftDrop = cms.bool(True),
-#    zcut = cms.double(0.1),
-#    beta = cms.double(0.0),
-#    R0   = cms.double(0.4),
-#    useExplicitGhosts = cms.bool(True),
-#    writeCompound = cms.bool(True),
-#    jetCollInstanceName=cms.string("SubJets")
-#)
+akSoftDrop4PFJets.zcut = cms.double(0.1)
+akSoftDropCh4PFJets.zcut = cms.double(0.1)
 akSoftDrop5PFJets = akSoftDrop4PFJets.clone(rParam = cms.double(0.5), R0 = cms.double(0.5))
 akSoftDropCh5PFJets = akSoftDropCh4PFJets.clone(rParam = cms.double(0.5), R0 = cms.double(0.5))
 
+akSoftDropZCut0004PFJets = akSoftDrop4PFJets.clone(zcut = cms.double(0.0))
+akSoftDropChZCut0004PFJets = akSoftDropCh4PFJets.clone(zcut = cms.double(0.0))
+akSoftDropZCut0005PFJets = akSoftDrop5PFJets.clone(zcut = cms.double(0.0))
+akSoftDropChZCut0005PFJets = akSoftDropCh5PFJets.clone(zcut = cms.double(0.0))
+
 from HeavyIonsAnalysis.JetAnalysis.akSoftDrop4GenJets_cfi import akSoftDrop4GenJets, akSoftDropCh4GenJets
+akSoftDrop4GenJets.zcut = cms.double(0.1)
+akSoftDropCh4GenJets.zcut = cms.double(0.1)
 akSoftDrop5GenJets = akSoftDrop4GenJets.clone(rParam = 0.5)
 akSoftDropCh5GenJets = akSoftDropCh4GenJets.clone(rParam = 0.5)
+
+akSoftDropZCut0004GenJets = akSoftDrop4GenJets.clone(zcut = cms.double(0.0))
+akSoftDropChZCut0004GenJets = akSoftDropCh4GenJets.clone(zcut = cms.double(0.0))
+akSoftDropZCut0005GenJets = akSoftDrop5GenJets.clone(zcut = cms.double(0.0))
+akSoftDropChZCut0005GenJets = akSoftDropCh5GenJets.clone(zcut = cms.double(0.0))
 
 #from HeavyIonsAnalysis.JetAnalysis.akSD4GenJets_cfi import akSD4GenJets
 #akSD5GenJets = akSD4GenJets.clone(rParam = 0.5)
@@ -81,6 +81,11 @@ from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDrop5PFJetSequence_pp_mc_cff impor
 from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropCh4PFJetSequence_pp_mc_cff import *
 from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropCh5PFJetSequence_pp_mc_cff import *
 
+from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropZCut0004PFJetSequence_pp_mc_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropZCut0005PFJetSequence_pp_mc_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropChZCut0004PFJetSequence_pp_mc_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akSoftDropChZCut0005PFJetSequence_pp_mc_cff import *
+
 highPurityTracks = cms.EDFilter("TrackSelector",
                                 src = cms.InputTag("generalTracks"),
                                 cut = cms.string('quality("highPurity")')
@@ -102,19 +107,31 @@ jetSequences = cms.Sequence(
     akSoftDrop5PFJets +
     akSoftDropCh4PFJets +
     akSoftDropCh5PFJets +
+    akSoftDropZCut0004PFJets +
+    akSoftDropZCut0005PFJets +
+    akSoftDropChZCut0004PFJets +
+    akSoftDropChZCut0005PFJets +
     akFilter4PFJets +
     akFilter5PFJets +
     akSoftDrop4GenJets +
     akSoftDrop5GenJets +
     akSoftDropCh4GenJets +
     akSoftDropCh5GenJets +
+    akSoftDropZCut0004GenJets +
+    akSoftDropZCut0005GenJets +
+    akSoftDropChZCut0004GenJets +
+    akSoftDropChZCut0005GenJets +
     highPurityTracks +
     ak3PFJetSequence +
     ak4PFJetSequence +
     ak5PFJetSequence +
-    ak4CaloJetSequence +
+    #ak4CaloJetSequence +
     akSoftDrop4PFJetSequence +
     akSoftDrop5PFJetSequence +
     akSoftDropCh4PFJetSequence +
-    akSoftDropCh5PFJetSequence
+    akSoftDropCh5PFJetSequence +
+    akSoftDropZCut0004PFJetSequence +
+    akSoftDropZCut0005PFJetSequence +
+    akSoftDropChZCut0004PFJetSequence +
+    akSoftDropChZCut0005PFJetSequence
 )

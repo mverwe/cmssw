@@ -177,7 +177,7 @@ akPuFilter6CaloNjettiness = Njettiness.clone(
 akPuFilter6CalopatJetsWithBtagging.userData.userFloats.src += ['akPuFilter6CaloNjettiness:tau1','akPuFilter6CaloNjettiness:tau2','akPuFilter6CaloNjettiness:tau3']
 
 akPuFilter6CaloJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akPuFilter6CalopatJetsWithBtagging"),
-                                                             genjetTag = 'ak6HiGenJets',
+                                                             genjetTag = 'ak6HiCleanedGenJets',#'ak6HiGenJets',
                                                              rParam = 0.6,
                                                              matchJets = cms.untracked.bool(False),
                                                              matchTag = 'patJetsWithBtagging',

@@ -11,7 +11,7 @@ do
         do
             for sub in Vs Pu Cs NONE
             do
-                for groom in SoftDrop SoftDropCh Filter NONE
+                for groom in SoftDrop SoftDropCh SoftDropZCut000 SoftDropChZCut000 Filter NONE
                 do
                     for radius in 1 2 3 4 5 6
                     do
@@ -88,10 +88,10 @@ do
 			        corrname=`echo ${algo} | sed 's/\(.*\)/\U\1/'`${radius}${object}${corrlabel}
 			    fi
                             
-			    if [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ] || [ $groom == "Filter" ]; then
+			    if [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ] || [ $groom == "SoftDropZCut000" ] || [ $groom == "SoftDropChZCut000" ] || [ $groom == "Filter" ]; then
 			        doSubJets="True"
                                 doGenTaus="False"
-                                if [ $sample == "mc" ] && [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ]; then
+                                if [ $sample == "mc" ] && [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ] || [ $groom == "SoftDropZCut000" ] || [ $groom == "SoftDropChZCut000" ]; then
                                     doGenSubJets="True"
                                     doGenSym="True"
                                 fi
@@ -133,7 +133,7 @@ do
                             #if [ $object == "PF" ] ; then
                             #    echo "${algo}${subt}${groomt}${radius}${object}patJetsWithBtagging.userData.userFloats.src += ['${algo}${subt}${groomt}${radius}Njettiness:tau1','${algo}${subt}${groomt}${radius}Njettiness:tau2','${algo}${subt}${groomt}${radius}Njettiness:tau3']" >> $algo$subt$groomt$radius${object}JetSequence_${system}_${sample}_cff.py 
                             #fi
-                            if [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ] ; then
+                            if [ $groom == "SoftDrop" ] || [ $groom == "SoftDropCh" ] || [ $groom == "SoftDropZCut000" ] || [ $groom == "SoftDropChZCut000" ] ; then
                                 echo "${algo}${subt}${groomt}${radius}${object}patJetsWithBtagging.userData.userFloats.src += ['${algo}${subt}${groomt}${radius}${object}Jets:sym']" >> $algo$subt$groomt$radius${object}JetSequence_${system}_${sample}_cff.py
                                 echo "${algo}${subt}${groomt}${radius}${object}patJetsWithBtagging.userData.userInts.src += ['${algo}${subt}${groomt}${radius}${object}Jets:droppedBranches']" >> $algo$subt$groomt$radius${object}JetSequence_${system}_${sample}_cff.py 
                             fi

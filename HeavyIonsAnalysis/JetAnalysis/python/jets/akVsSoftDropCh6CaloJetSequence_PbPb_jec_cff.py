@@ -177,7 +177,7 @@ akVsSoftDropCh6CaloNjettiness = Njettiness.clone(
 akVsSoftDropCh6CalopatJetsWithBtagging.userData.userFloats.src += ['akVsSoftDropCh6CaloNjettiness:tau1','akVsSoftDropCh6CaloNjettiness:tau2','akVsSoftDropCh6CaloNjettiness:tau3']
 
 akVsSoftDropCh6CaloJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akVsSoftDropCh6CalopatJetsWithBtagging"),
-                                                             genjetTag = 'ak6HiGenJets',
+                                                             genjetTag = 'ak6HiSignalGenJets',#'ak6HiGenJets',
                                                              rParam = 0.6,
                                                              matchJets = cms.untracked.bool(False),
                                                              matchTag = 'patJetsWithBtagging',

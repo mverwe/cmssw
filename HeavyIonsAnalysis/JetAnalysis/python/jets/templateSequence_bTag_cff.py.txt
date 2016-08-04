@@ -177,7 +177,7 @@ ALGO_SUB_GROOM_RADIUS_OBJECT_Njettiness = Njettiness.clone(
 ALGO_SUB_GROOM_RADIUS_OBJECT_patJetsWithBtagging.userData.userFloats.src += ['ALGO_SUB_GROOM_RADIUS_OBJECT_Njettiness:tau1','ALGO_SUB_GROOM_RADIUS_OBJECT_Njettiness:tau2','ALGO_SUB_GROOM_RADIUS_OBJECT_Njettiness:tau3']
 
 ALGO_SUB_GROOM_RADIUS_OBJECT_JetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("ALGO_SUB_GROOM_RADIUS_OBJECT_patJetsWithBtagging"),
-                                                             genjetTag = 'ALGO_RADIUS_GENJETS',
+                                                             genjetTag = 'ALGO_RADIUS_MATCHGENJETS',#'ALGO_RADIUS_GENJETS',
                                                              rParam = 0.RADIUS_,
                                                              matchJets = cms.untracked.bool(DOMATCH),
                                                              matchTag = 'MATCHED_patJetsWithBtagging',

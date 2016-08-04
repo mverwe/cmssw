@@ -177,7 +177,7 @@ akPuSoftDrop2PFNjettiness = Njettiness.clone(
 akPuSoftDrop2PFpatJetsWithBtagging.userData.userFloats.src += ['akPuSoftDrop2PFNjettiness:tau1','akPuSoftDrop2PFNjettiness:tau2','akPuSoftDrop2PFNjettiness:tau3']
 
 akPuSoftDrop2PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akPuSoftDrop2PFpatJetsWithBtagging"),
-                                                             genjetTag = 'ak2GenJets',
+                                                             genjetTag = 'ak2GenJets',#'ak2GenJets',
                                                              rParam = 0.2,
                                                              matchJets = cms.untracked.bool(False),
                                                              matchTag = 'patJetsWithBtagging',

@@ -7,7 +7,33 @@ from HeavyIonsAnalysis.JetAnalysis.akSoftDrop4GenJets_cfi import akSoftDrop4GenJ
 
 genParticlesForJetsSignal = genParticlesForJets.clone(src = cms.InputTag("hiSignalGenParticles"))
 akSoftDrop4GenJets.src            = cms.InputTag("genParticlesForJetsSignal")
-akSoftDrop4GenJets.zcut           = cms.double(0.05) #0.1)
+akSoftDrop4GenJets.zcut           = cms.double(0.1)
+
+#from RecoJets.JetProducers.ak5GenJets_cfi import ak5GenJets
+#ak5GenJets.src = ms.InputTag("genParticlesForJetsSignal")
+#ak2GenJets = ak5GenJets.clone(rParam = 0.2)
+#ak3GenJets = ak5GenJets.clone(rParam = 0.3)
+#ak4GenJets = ak5GenJets.clone(rParam = 0.4)
+
+#Njettiness gen jets
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
+ak2GenNjettiness = Njettiness.clone(
+                    src = cms.InputTag("ak2HiSignalGenJets"),
+                    R0  = cms.double( 0.2)
+)
+
+ak3GenNjettiness = Njettiness.clone(
+                    src = cms.InputTag("ak3HiSignalGenJets"),
+                    R0  = cms.double( 0.3)
+)
+ak4GenNjettiness = Njettiness.clone(
+                    src = cms.InputTag("ak4HiSignalGenJets"),
+                    R0  = cms.double( 0.4)
+)
+ak5GenNjettiness = Njettiness.clone(
+                    src = cms.InputTag("ak5HiSignalGenJets"),
+                    R0  = cms.double( 0.5)
+)
 
 akSoftDrop1GenJets = akSoftDrop4GenJets.clone(rParam = cms.double(0.1) , R0 = cms.double(0.1))
 akSoftDrop2GenJets = akSoftDrop4GenJets.clone(rParam = cms.double(0.2) , R0 = cms.double(0.2))
@@ -25,6 +51,9 @@ akHiGenJets = cms.Sequence(
     ak4HiGenJets +
     ak5HiGenJets +
     ak6HiGenJets +
+    #ak3GenNjettiness +
+    #ak4GenNjettiness +
+    #ak5GenNjettiness +
     akSoftDrop4GenJets +
     akSoftDrop5GenJets
 )
