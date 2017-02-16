@@ -61,11 +61,13 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   const PseudoTop& pseudoTop = rivet_.applyProjection<PseudoTop>(genEvent, projection_);
 
   // Convert into edm objects
+  // Prompt neutrinos
   for ( auto p : pseudoTop.neutrinos() ) {
     neutrinos->push_back(reco::GenParticle(p.charge(), p4(p), genVertex_, p.pdgId(), 1, true));
   }
   std::sort(neutrinos->begin(), neutrinos->end(), GreaterByPt<reco::Candidate>());
 
+  // Prompt leptons
   int iConstituent = 0;
   for ( auto lepton : pseudoTop.leptons() ) {
     reco::GenJet lepJet;
@@ -89,6 +91,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   }
   std::sort(leptons->begin(), leptons->end(), GreaterByPt<reco::GenJet>());
 
+  // Jets with constituents and tag particles
   int iTag = 0;
   for ( auto jet : pseudoTop.jets() ) {
     const auto pjet = jet.pseudojet();
@@ -110,11 +113,23 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
       tags->push_back(reco::GenParticle(p.charge(), p4(p)*1e-20, genVertex_, p.pdgId(), 2, true));
       genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(tagsRefHandle, iTag)));
       ++iTag;
+      // Also save neutrino daughters of tag particles
+      int iTagMother = iTag-1;
+      for ( auto d : p.children()) {
+        if (d.isNeutrino()) {
+          tags->push_back(reco::GenParticle(d.charge(), p4(d)*1e-20, genVertex_, d.pdgId(), 1, true));
+          tags->at(iTag).addMother(reco::GenParticleRef(tagsRefHandle, iTagMother));
+          tags->at(iTagMother).addDaughter(reco::GenParticleRef(tagsRefHandle, iTag));
+          genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(tagsRefHandle, iTag)));
+          ++iTag;
+        }
+      }
     }
 
     jets->push_back(genJet);
   }
 
+  // Reconstructed PseudoTops and constituents
   if ( pseudoTop.mode() == PseudoTop::CH_FULLLEPTON or pseudoTop.mode() == PseudoTop::CH_SEMILEPTON ) {
     reco::GenParticle t1(pseudoTop.t1().charge(), p4(pseudoTop.t1()), genVertex_, pseudoTop.t1().pdgId(), 3, false);
     reco::GenParticle w1(pseudoTop.w1().charge(), p4(pseudoTop.w1()), genVertex_, pseudoTop.w1().pdgId(), 3, true);
