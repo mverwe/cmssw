@@ -41,10 +41,7 @@ void PseudoTop::project(const Event& event) {
     else               _ljets.push_back(jet);
   }
   
-  const Particles neutrinos = applyProjection<IdentifiedFinalState>(event, "Neutrinos").particlesByPt();
-  for (const Particle& nu : neutrinos) {
-    if (not nu.fromHadron()) _neutrinos.push_back(nu); // Get prompt neutrinos
-  }
+  _neutrinos = applyProjection<PromptFinalState>(event, "PromptNeutrinos").particlesByPt();
   
   _met = -applyProjection<MissingMomentum>(event, "MET").vectorEt();
 

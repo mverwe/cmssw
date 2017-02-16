@@ -9,10 +9,10 @@
 #include "Rivet/Event.hh"
 #include "Rivet/Projections/FastJets.hh"
 #include "Rivet/Projections/ChargedLeptons.hh"
+#include "Rivet/Projections/PromptFinalState.hh"
 #include "Rivet/Projections/DressedLeptons.hh"
 #include "Rivet/Projections/VetoedFinalState.hh"
 #include "Rivet/Projections/IdentifiedFinalState.hh"
-#include "Rivet/Projections/VisibleFinalState.hh"
 #include "Rivet/Projections/MissingMomentum.hh"
 #include "Rivet/Tools/RivetHepMC.hh"
 
@@ -65,9 +65,11 @@ namespace Rivet {
         
         // Dressed leptons
         ChargedLeptons charged_leptons(fs);
+        PromptFinalState prompt_leptons(charged_leptons);
+        prompt_leptons.acceptTauDecays(true);
         IdentifiedFinalState photons(fs);
         photons.acceptIdPair(PID::PHOTON);
-        DressedLeptons dressed_leptons(photons, charged_leptons, _lepR, lepton_cut, true, false);
+        DressedLeptons dressed_leptons(photons, prompt_leptons, _lepR, lepton_cut, /*cluster*/ true, /*useDecayPhotons*/ false);
         addProjection(dressed_leptons, "DressedLeptons");
         
         // Jets
@@ -78,7 +80,9 @@ namespace Rivet {
         // Neutrinos
         IdentifiedFinalState neutrinos(fs);
         neutrinos.acceptNeutrinos();
-        addProjection(neutrinos, "Neutrinos");
+        PromptFinalState prompt_neutrinos(neutrinos);
+        prompt_neutrinos.acceptTauDecays(true);
+        addProjection(prompt_neutrinos, "PromptNeutrinos");
         
         // MET
         addProjection(MissingMomentum(fs), "MET");
