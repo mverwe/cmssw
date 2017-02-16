@@ -108,7 +108,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
       // The tag particles are accessible as jet daughters, so scale down p4 for safety.
       // p4 needs to be multiplied by 1e20 for fragmentation analysis.
       tags->push_back(reco::GenParticle(p.charge(), p4(p)*1e-20, genVertex_, p.pdgId(), 2, true));
-      genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(tagsRefHandle, iConstituent)));
+      genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(tagsRefHandle, iTag)));
       ++iTag;
     }
 
