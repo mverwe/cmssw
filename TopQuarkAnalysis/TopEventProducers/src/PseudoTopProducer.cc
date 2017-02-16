@@ -25,6 +25,7 @@ PseudoTopProducer::PseudoTopProducer(const edm::ParameterSet& pset):
   produces<reco::GenJetCollection>("leptons");
   produces<reco::GenJetCollection>("jets");
   produces<reco::GenParticleCollection>("consts");
+  produces<reco::GenParticleCollection>("tags");
 
   produces<reco::GenParticleCollection>();
   
@@ -41,10 +42,12 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   std::unique_ptr<reco::GenJetCollection> leptons(new reco::GenJetCollection);
   std::unique_ptr<reco::GenJetCollection> jets(new reco::GenJetCollection);
   std::unique_ptr<reco::GenParticleCollection> consts(new reco::GenParticleCollection);
+  std::unique_ptr<reco::GenParticleCollection> tags(new reco::GenParticleCollection);
   auto neutrinosRefHandle = event.getRefBeforePut<reco::GenParticleCollection>("neutrinos");
   auto leptonsRefHandle = event.getRefBeforePut<reco::GenJetCollection>("leptons");
   auto jetsRefHandle = event.getRefBeforePut<reco::GenJetCollection>("jets");
   auto constsRefHandle = event.getRefBeforePut<reco::GenParticleCollection>("consts");
+  auto tagsRefHandle = event.getRefBeforePut<reco::GenParticleCollection>("tags");
 
   std::unique_ptr<reco::GenParticleCollection> pseudoTopCands(new reco::GenParticleCollection);
   auto pseudoTopRefHandle = event.getRefBeforePut<reco::GenParticleCollection>();
@@ -86,6 +89,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   }
   std::sort(leptons->begin(), leptons->end(), GreaterByPt<reco::GenJet>());
 
+  int iTag = 0;
   for ( auto jet : pseudoTop.jets() ) {
     const auto pjet = jet.pseudojet();
 
@@ -99,6 +103,13 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
       consts->push_back(reco::GenParticle(p.charge(), p4(p), genVertex_, p.pdgId(), 1, true));
       genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(constsRefHandle, iConstituent)));
       ++iConstituent;
+    }
+    for ( auto p : jet.tags()) {
+      // The tag particles are accessible as jet daughters, so scale down p4 for safety.
+      // p4 needs to be multiplied by 1e20 for fragmentation analysis.
+      tags->push_back(reco::GenParticle(p.charge(), p4(p)*1e-20, genVertex_, p.pdgId(), 2, true));
+      genJet.addDaughter(edm::refToPtr(reco::GenParticleRef(tagsRefHandle, iConstituent)));
+      ++iTag;
     }
 
     jets->push_back(genJet);
@@ -160,6 +171,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   event.put(std::move(leptons), "leptons");
   event.put(std::move(jets), "jets");
   event.put(std::move(consts), "consts");
+  event.put(std::move(tags), "tags");
 
   event.put(std::move(pseudoTopCands));
 }
