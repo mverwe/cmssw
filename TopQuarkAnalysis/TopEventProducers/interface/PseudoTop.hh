@@ -61,7 +61,7 @@ namespace Rivet {
         Cut lepton_cut   = (Cuts::abseta < _lepMaxEta) and (Cuts::pT > _lepMinPt*GeV);
         
         // Generic final state
-        FinalState fs(Cuts::abseta < 5.);
+        FinalState fs(particle_cut);
         
         // Dressed leptons
         ChargedLeptons charged_leptons(fs);
