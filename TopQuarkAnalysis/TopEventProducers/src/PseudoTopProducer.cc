@@ -4,6 +4,8 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Common/interface/RefToPtr.h"
+#include "DataFormats/METReco/interface/METFwd.h"
+#include "DataFormats/METReco/interface/MET.h"
 #include "RecoJets/JetProducers/interface/JetSpecific.h"
 #include "CommonTools/Utils/interface/PtComparator.h"
 
@@ -26,7 +28,7 @@ PseudoTopProducer::PseudoTopProducer(const edm::ParameterSet& pset):
   produces<reco::GenJetCollection>("jets");
   produces<reco::GenParticleCollection>("consts");
   produces<reco::GenParticleCollection>("tags");
-
+  produces<reco::METCollection>("mets");
   produces<reco::GenParticleCollection>();
   
   // Init projections added in RivetWrapper
@@ -43,6 +45,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   std::unique_ptr<reco::GenJetCollection> jets(new reco::GenJetCollection);
   std::unique_ptr<reco::GenParticleCollection> consts(new reco::GenParticleCollection);
   std::unique_ptr<reco::GenParticleCollection> tags(new reco::GenParticleCollection);
+  std::unique_ptr<reco::METCollection> mets(new reco::METCollection);
   auto neutrinosRefHandle = event.getRefBeforePut<reco::GenParticleCollection>("neutrinos");
   auto leptonsRefHandle = event.getRefBeforePut<reco::GenJetCollection>("leptons");
   auto jetsRefHandle = event.getRefBeforePut<reco::GenJetCollection>("jets");
@@ -128,6 +131,10 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
 
     jets->push_back(genJet);
   }
+  
+  // MET
+  reco::Candidate::LorentzVector metP4(pseudoTop.met().x(), pseudoTop.met().y(), 0., sqrt(pow(pseudoTop.met().x(), 2) + pow(pseudoTop.met().y(), 2)));
+  mets->push_back(reco::MET(metP4, genVertex_));
 
   // Reconstructed PseudoTops and constituents
   if ( pseudoTop.mode() == PseudoTop::CH_FULLLEPTON or pseudoTop.mode() == PseudoTop::CH_SEMILEPTON ) {
@@ -187,7 +194,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   event.put(std::move(jets), "jets");
   event.put(std::move(consts), "consts");
   event.put(std::move(tags), "tags");
-
+  event.put(std::move(mets), "mets");
   event.put(std::move(pseudoTopCands));
 }
 
