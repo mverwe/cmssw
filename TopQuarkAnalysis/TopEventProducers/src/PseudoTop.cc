@@ -47,6 +47,8 @@ void PseudoTop::project(const Event& event) {
 
   // All building blocks are ready. Continue to pseudo-W and pseudo-top combination
 
+  if (not _runTopReconstruction) return;
+  
   if (_bjets.size() < 2) return; // Ignore single top for now
 
   if ( _leptons.size() == 2 and _neutrinos.size() >= 2 ) {

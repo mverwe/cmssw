@@ -52,7 +52,9 @@ namespace Rivet {
       _minMtWSemiLepton(pset.getParameter<double>("minMtWSemiLepton")),
       
       _tMass(pset.getParameter<double>("tMass")),
-      _wMass(pset.getParameter<double>("wMass"))
+      _wMass(pset.getParameter<double>("wMass")),
+      
+      _runTopReconstruction(pset.getParameter<bool>("runTopReconstruction"))
       {
         setName("PseudoTop");
         
@@ -142,7 +144,7 @@ namespace Rivet {
       double _wMass = 80.4;
 
     private:
-      bool _isValid;
+      bool _isValid, _runTopReconstruction;
       DecayMode _mode1, _mode2;
 
       Particle _t1, _t2;

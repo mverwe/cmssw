@@ -23,4 +23,6 @@ pseudoTop = cms.EDProducer("PseudoTopProducer",
     maxVetoLeptonEtaSemilepton = cms.double(2.5),
     minMETSemiLepton = cms.double(30),
     minMtWSemiLepton = cms.double(30),
+    
+    runTopReconstruction = cms.bool(True),
 )
