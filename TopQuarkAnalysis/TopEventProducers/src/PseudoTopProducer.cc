@@ -24,6 +24,7 @@ PseudoTopProducer::PseudoTopProducer(const edm::ParameterSet& pset):
   genVertex_ = reco::Particle::Point(0,0,0);
 
   produces<reco::GenParticleCollection>("neutrinos");
+  produces<reco::GenParticleCollection>("photons");
   produces<reco::GenJetCollection>("leptons");
   produces<reco::GenJetCollection>("jets");
   produces<reco::GenJetCollection>("nujets");
@@ -100,6 +101,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   typedef reco::Candidate::LorentzVector LorentzVector;
 
   std::unique_ptr<reco::GenParticleCollection> neutrinos(new reco::GenParticleCollection);
+  std::unique_ptr<reco::GenParticleCollection> photons(new reco::GenParticleCollection);
   std::unique_ptr<reco::GenJetCollection> leptons(new reco::GenJetCollection);
   std::unique_ptr<reco::GenJetCollection> jets(new reco::GenJetCollection);
   std::unique_ptr<reco::GenJetCollection> nujets(new reco::GenJetCollection);
@@ -127,6 +129,12 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
     neutrinos->push_back(reco::GenParticle(p.charge(), p4(p), genVertex_, p.pdgId(), 1, true));
   }
   std::sort(neutrinos->begin(), neutrinos->end(), GreaterByPt<reco::Candidate>());
+  
+  // Photons
+  for ( auto p : pseudoTop.photons() ) {
+    photons->push_back(reco::GenParticle(p.charge(), p4(p), genVertex_, p.pdgId(), 1, true));
+  }
+  std::sort(photons->begin(), photons->end(), GreaterByPt<reco::Candidate>());
 
   // Prompt leptons
   int iConstituent = -1;
@@ -220,6 +228,7 @@ void PseudoTopProducer::produce(edm::Event& event, const edm::EventSetup& eventS
   }
 
   event.put(std::move(neutrinos), "neutrinos");
+  event.put(std::move(photons), "photons");
   event.put(std::move(leptons), "leptons");
   event.put(std::move(jets), "jets");
   event.put(std::move(nujets), "nujets");

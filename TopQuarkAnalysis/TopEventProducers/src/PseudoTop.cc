@@ -28,6 +28,7 @@ void PseudoTop::project(const Event& event) {
   _ljets.clear();
   _fatjets.clear();
   _leptons.clear();
+  _photons.clear();
   _neutrinos.clear();
   _mode1 = _mode2 = CH_HADRON;
   
@@ -46,6 +47,8 @@ void PseudoTop::project(const Event& event) {
   
   Cut fatjet_cut = (Cuts::abseta < _fatJetMaxEta) and (Cuts::pT > _fatJetMinPt*GeV);
   _fatjets = applyProjection<FastJets>(event, "FatJets").jetsByPt(fatjet_cut);
+  
+  _photons = applyProjection<VetoedFinalState>(event, "Photons").particlesByPt();
   
   _neutrinos = applyProjection<PromptFinalState>(event, "PromptNeutrinos").particlesByPt();
   

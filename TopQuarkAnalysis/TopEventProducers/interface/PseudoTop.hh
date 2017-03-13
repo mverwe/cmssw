@@ -84,6 +84,14 @@ namespace Rivet {
         DressedLeptons dressed_leptons(dress_photons, prompt_leptons, _lepR, lepton_cut, /*cluster*/ true, /*useDecayPhotons*/ true); // useDecayPhotons=true allows for photons with tau ancestor, photons from hadrons are vetoed by the PromptFinalState; will be default DressedLeptons behaviour for Rivet >= 2.5.4
         addProjection(dressed_leptons, "DressedLeptons");
         
+        // Photons
+        // - Not from hadrons and not belonging to dressed leptons
+        // - Final isolation check is left to the user
+        // - Not removed from jet clustering
+        VetoedFinalState prompt_photons(dress_photons);
+        prompt_photons.addVetoOnThisFinalState(dressed_leptons);
+        addProjection(prompt_photons, "Photons");
+        
         // Jets
         VetoedFinalState fsForJets(fs);
         fsForJets.addVetoOnThisFinalState(dressed_leptons);
@@ -97,6 +105,7 @@ namespace Rivet {
         IdentifiedFinalState neutrinos(fs);
         neutrinos.acceptNeutrinos();
         PromptFinalState prompt_neutrinos(neutrinos);
+        prompt_neutrinos.acceptMuonDecays(true);
         prompt_neutrinos.acceptTauDecays(true);
         addProjection(prompt_neutrinos, "PromptNeutrinos");
         
@@ -134,6 +143,7 @@ namespace Rivet {
       ParticleVector wDecays1() const {return _wDecays1;}
       ParticleVector wDecays2() const {return _wDecays2;}
       vector<DressedLepton> leptons() const {return _leptons;}
+      ParticleVector photons() const {return _photons;}
       ParticleVector neutrinos() const {return _neutrinos;}
       Jets jets() const {return _jets;}
       Jets bjets() const {return _bjets;}
@@ -171,7 +181,7 @@ namespace Rivet {
       ParticleVector _wDecays1, _wDecays2;
       
       vector<DressedLepton> _leptons;
-      ParticleVector _neutrinos;
+      ParticleVector _photons, _neutrinos;
       Jets _jets, _bjets, _ljets, _nujets, _fatjets;
       Vector3 _met;
 
