@@ -26,10 +26,9 @@ process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
     inputPruned = cms.InputTag("prunedGenParticles"),
     inputPacked = cms.InputTag("packedGenParticles"),
 )
-process.genParticles2HepMC = cms.EDProducer("GenParticles2HepMCConverter",
-    genParticles = cms.InputTag("mergedGenParticles"),
-    genEventInfo = cms.InputTag("generator"),
-)
+process.load('GeneratorInterface.RivetInterface.genParticles2HepMC_cfi')
+process.genParticles2HepMC.genParticles = cms.InputTag("mergedGenParticles")
+process.genParticles2HepMC.genEventInfo = cms.InputTag("generator")
 process.load("TopQuarkAnalysis.TopEventProducers.producers.pseudoTop_cfi")
 
 process.out = cms.OutputModule("PoolOutputModule",

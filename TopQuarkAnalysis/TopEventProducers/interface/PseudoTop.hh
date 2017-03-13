@@ -32,6 +32,8 @@ namespace Rivet {
       PseudoTop(const edm::ParameterSet& pset)
       : FinalState(-MAXDOUBLE, MAXDOUBLE, 0*GeV),
       
+      _maxEta(pset.getParameter<double>("maxEta")),
+      
       _lepR(pset.getParameter<double>("leptonConeSize")),
       _lepMinPt(pset.getParameter<double>("minLeptonPt")),
       _lepMaxEta(pset.getParameter<double>("maxLeptonEta")),
@@ -39,6 +41,10 @@ namespace Rivet {
       _jetR(pset.getParameter<double>("jetConeSize")),
       _jetMinPt(pset.getParameter<double>("minJetPt")),
       _jetMaxEta(pset.getParameter<double>("maxJetEta")),
+      
+      _fatJetR(pset.getParameter<double>("fatJetConeSize")),
+      _fatJetMinPt(pset.getParameter<double>("minFatJetPt")),
+      _fatJetMaxEta(pset.getParameter<double>("maxFatJetEta")),
 
       _minLeptonPtDilepton(pset.getParameter<double>("minLeptonPtDilepton")),
       _maxLeptonEtaDilepton(pset.getParameter<double>("maxLeptonEtaDilepton")),
@@ -59,7 +65,7 @@ namespace Rivet {
         setName("PseudoTop");
         
         // Cuts
-        Cut particle_cut = (Cuts::abseta < 6.0) and (Cuts::pT > 0.0*MeV);
+        Cut particle_cut = (Cuts::abseta < _maxEta) and (Cuts::pT > 0.0*MeV);
         Cut lepton_cut   = (Cuts::abseta < _lepMaxEta) and (Cuts::pT > _lepMinPt*GeV);
         
         // Generic final state
@@ -68,16 +74,24 @@ namespace Rivet {
         // Dressed leptons
         ChargedLeptons charged_leptons(fs);
         PromptFinalState prompt_leptons(charged_leptons);
+        prompt_leptons.acceptMuonDecays(true);
         prompt_leptons.acceptTauDecays(true);
         IdentifiedFinalState photons(fs);
         photons.acceptIdPair(PID::PHOTON);
-        DressedLeptons dressed_leptons(photons, prompt_leptons, _lepR, lepton_cut, /*cluster*/ true, /*useDecayPhotons*/ false);
+        PromptFinalState dress_photons(photons);
+        dress_photons.acceptMuonDecays(true);
+        dress_photons.acceptTauDecays(true);
+        DressedLeptons dressed_leptons(dress_photons, prompt_leptons, _lepR, lepton_cut, /*cluster*/ true, /*useDecayPhotons*/ true); // useDecayPhotons=true allows for photons with tau ancestor, photons from hadrons are vetoed by the PromptFinalState; will be default DressedLeptons behaviour for Rivet >= 2.5.4
         addProjection(dressed_leptons, "DressedLeptons");
         
         // Jets
         VetoedFinalState fsForJets(fs);
         fsForJets.addVetoOnThisFinalState(dressed_leptons);
         addProjection(FastJets(fsForJets, FastJets::ANTIKT, _jetR), "Jets");
+        addProjection(FastJets(fsForJets, FastJets::ANTIKT, _jetR, JetAlg::ALL_MUONS, JetAlg::DECAY_INVISIBLES), "NuJets");
+        
+        // FatJets
+        addProjection(FastJets(fsForJets, FastJets::ANTIKT, _fatJetR), "FatJets");
         
         // Neutrinos
         IdentifiedFinalState neutrinos(fs);
@@ -124,6 +138,8 @@ namespace Rivet {
       Jets jets() const {return _jets;}
       Jets bjets() const {return _bjets;}
       Jets ljets() const {return _ljets;}
+      Jets nujets() const {return _nujets;}
+      Jets fatjets() const {return _fatjets;}
       Vector3 met() const {return _met;}
 
     protected:
@@ -131,8 +147,10 @@ namespace Rivet {
       void project(const Event& event) override;
 
     private:
+      const double _maxEta;
       const double _lepR, _lepMinPt, _lepMaxEta;
       const double _jetR, _jetMinPt, _jetMaxEta;
+      const double _fatJetR, _fatJetMinPt, _fatJetMaxEta;
 
       const double _minLeptonPtDilepton, _maxLeptonEtaDilepton;
       const double _minDileptonMassDilepton;
@@ -154,7 +172,7 @@ namespace Rivet {
       
       vector<DressedLepton> _leptons;
       ParticleVector _neutrinos;
-      Jets _jets, _bjets, _ljets;
+      Jets _jets, _bjets, _ljets, _nujets, _fatjets;
       Vector3 _met;
 
   };
