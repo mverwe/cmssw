@@ -2,40 +2,38 @@
 #define TopQuarkAnalysis_TopEventProducers_PseudoTopProducer_H
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
-#include "fastjet/JetDefinition.hh"
 
-class PseudoTopProducer : public edm::EDProducer
+#include "TopQuarkAnalysis/TopEventProducers/interface/RivetWrapper.h"
+
+class PseudoTopProducer : public edm::stream::EDProducer<>
 {
 public:
   PseudoTopProducer(const edm::ParameterSet& pset);
   void produce(edm::Event& event, const edm::EventSetup& eventSetup) override;
+  void addGenJet(Rivet::Jet jet, std::unique_ptr<reco::GenJetCollection> &jets, std::unique_ptr<reco::GenParticleCollection> &consts, auto &constsRefHandle, int &iConstituent, std::unique_ptr<reco::GenParticleCollection> &tags, auto &tagsRefHandle, int &iTag);
 
 private:
-  bool isFromHadron(const reco::Candidate* p) const;
-  bool isBHadron(const reco::Candidate* p) const;
-  bool isBHadron(const unsigned int pdgId) const;
+  template<typename T> reco::Candidate::LorentzVector p4(const T& p) const
+  {
+    return reco::Candidate::LorentzVector(p.px(), p.py(), p.pz(), p.energy());
+  }
 
-  const reco::Candidate* getLast(const reco::Candidate* p);
-  reco::GenParticleRef buildGenParticle(const reco::Candidate* p, reco::GenParticleRefProd& refHandle,
-                                        std::auto_ptr<reco::GenParticleCollection>& outColl) const;
+  const edm::EDGetTokenT<edm::HepMCProduct> srcToken_;
+  
+  const std::string projection_;
 
-  typedef reco::Particle::LorentzVector LorentzVector;
-
-private:
-  edm::EDGetTokenT<edm::View<reco::Candidate> > finalStateToken_;
-  edm::EDGetTokenT<edm::View<reco::Candidate> > genParticleToken_;
-  const double leptonMinPt_, leptonMaxEta_, jetMinPt_, jetMaxEta_;
-  const double wMass_, tMass_;
-
-  typedef fastjet::JetDefinition JetDef;
-  std::shared_ptr<JetDef> fjLepDef_, fjJetDef_;
   reco::Particle::Point genVertex_;
+  
+  Rivet::RivetWrapper rivet_;
 
 };
 

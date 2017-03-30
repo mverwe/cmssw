@@ -10,4 +10,6 @@
 <use   name="TopQuarkAnalysis/TopEventSelection"/>
 <use   name="RecoJets/JetProducers" />
 <use   name="fastjet" />
+<use   name="rivet" />
+<use   name="yoda" />
 <flags   EDM_PLUGIN="1"/>
