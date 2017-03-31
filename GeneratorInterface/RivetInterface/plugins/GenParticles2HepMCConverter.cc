@@ -85,12 +85,14 @@ void GenParticles2HepMCConverter::produce(edm::Event& event, const edm::EventSet
 
   // Set PDF
   const gen::PdfInfo* pdf = genEventInfoHandle->pdf();
+  if(pdf) {  
   const int pdf_id1 = pdf->id.first, pdf_id2 = pdf->id.second;
   const double pdf_x1 = pdf->x.first, pdf_x2 = pdf->x.second;
   const double pdf_scalePDF = pdf->scalePDF;
   const double pdf_xPDF1 = pdf->xPDF.first, pdf_xPDF2 = pdf->xPDF.second;
   HepMC::PdfInfo hepmc_pdfInfo(pdf_id1, pdf_id2, pdf_x1, pdf_x2, pdf_scalePDF, pdf_xPDF1, pdf_xPDF2);
   hepmc_event->set_pdf_info(hepmc_pdfInfo);
+  }
 
   // Prepare list of HepMC::GenParticles
   std::map<const reco::Candidate*, HepMC::GenParticle*> genCandToHepMCMap;
