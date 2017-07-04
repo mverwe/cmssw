@@ -13,7 +13,6 @@
 using namespace std;
 using namespace edm;
 
-
 HiFJGridEmptyAreaCalculator::HiFJGridEmptyAreaCalculator(const edm::ParameterSet& iConfig):
   gridWidth_(iConfig.getUntrackedParameter<double>("gridWidth",0.005)),
   band_(iConfig.getUntrackedParameter<double>("bandWidth",0.2)),
@@ -156,60 +155,69 @@ HiFJGridEmptyAreaCalculator::produce(edm::Event& iEvent, const edm::EventSetup& 
 void
 HiFJGridEmptyAreaCalculator::calculate_grid_rho(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
+  std::cout << "enter HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
   vector<vector<double>> scalar_pt(_ny, vector<double>(_nphi, 0.0));
-  
+  std::cout << "_ny: " << _ny << " _nphi: " << _nphi << std::endl;
   edm::Handle<reco::PFCandidateCollection> pfCands;
   iEvent.getByToken(pfCandsToken_, pfCands);
   const reco::PFCandidateCollection *pfCandidateColl = pfCands.product();
+  std::cout << "loop over PF candidates" << std::endl;
   for(unsigned icand = 0; icand < pfCandidateColl->size(); icand++) {
-   const reco::PFCandidate pfCandidate = pfCandidateColl->at(icand);
-   //use ony the particles within the eta range
-   if (pfCandidate.eta() < _ymin || pfCandidate.eta() > _ymax ) continue;
-   int jeta = tile_index_eta(&pfCandidate);
-   int jphi = tile_index_phi(&pfCandidate);
-   scalar_pt[jeta][jphi] += pfCandidate.pt();
+    const reco::PFCandidate pfCandidate = pfCandidateColl->at(icand);
+    //use ony the particles within the eta range
+    if (pfCandidate.eta() < _ymin || pfCandidate.eta() > _ymax ) continue;
+    std::cout << "particle passed eta selection. eta: " << pfCandidate.eta() << std::endl;
+    int jeta = tile_index_eta(&pfCandidate);
+    std::cout << "jeta: " << jeta << std::endl;
+    int jphi = tile_index_phi(&pfCandidate);
+    std::cout << "jphi: " << jphi << std::endl;
+    if(jeta<0 || jphi<0) continue; //MV: Avoiding SegFault. Happens when eta of particle is exactly 5
+    scalar_pt[jeta][jphi] += pfCandidate.pt();
   }
-  
- _rho_vs_eta.resize(_ny);
- _mean_rho_vs_eta.resize(_ny);
+
+  std::cout << "_ny: " << _ny << std::endl;
+  _rho_vs_eta.resize(_ny);
+  _mean_rho_vs_eta.resize(_ny);
   for(int jeta = 0; jeta < _ny; jeta++){
   
- 	 _rho_vs_eta[jeta] = 0;
- 	 _mean_rho_vs_eta[jeta] = 0;
-	 vector<double> rho_vs_phi;
-	 int n_empty = 0;
+    _rho_vs_eta[jeta] = 0;
+    _mean_rho_vs_eta[jeta] = 0;
+    vector<double> rho_vs_phi;
+    int n_empty = 0;
 	
-	for(int jphi = 0; jphi < _nphi; jphi++){
-	  double binpt = scalar_pt[jeta][jphi];
-	  _mean_rho_vs_eta[jeta] += binpt;
+    for(int jphi = 0; jphi < _nphi; jphi++){
+      double binpt = scalar_pt[jeta][jphi];
+      _mean_rho_vs_eta[jeta] += binpt;
       //fill in the vector for median calculation
-	  if(binpt > 0) rho_vs_phi.push_back(binpt);
-	  else n_empty++;
-	 } 
-	 _mean_rho_vs_eta[jeta] /= ((double)_nphi);
-     _mean_rho_vs_eta[jeta] /= _tile_area;
+      if(binpt > 0) rho_vs_phi.push_back(binpt);
+      else n_empty++;
+    }
+    std::cout << "_nphi: " << _nphi << " _tile_area: " << _tile_area << std::endl;
+    _mean_rho_vs_eta[jeta] /= ((double)_nphi);
+    _mean_rho_vs_eta[jeta] /= _tile_area;
 
-	 //median calculation
-	 sort(rho_vs_phi.begin(), rho_vs_phi.end());
-	 //use only the nonzero grid cells for median calculation;
-	 int n_full = _nphi - n_empty;
-	 if(n_full == 0){
- 	  _rho_vs_eta[jeta] = 0;
- 	  continue;
-	 }
-	 if (n_full  % 2 == 0)
-     {
-       _rho_vs_eta[jeta] = (rho_vs_phi[(int)(n_full / 2 - 1)] + rho_vs_phi[(int)(n_full / 2)]) / 2;
-     }
-     else 
-     {
-       _rho_vs_eta[jeta] = rho_vs_phi[(int)(n_full / 2)];
-     }
-     //correct for empty cells 
-	 _rho_vs_eta[jeta] *= (((double) n_full)/((double) _nphi));
-	 //normalize to area
-     _rho_vs_eta[jeta] /= _tile_area;
+    //median calculation
+    sort(rho_vs_phi.begin(), rho_vs_phi.end());
+    //use only the nonzero grid cells for median calculation;
+    int n_full = _nphi - n_empty;
+    if(n_full == 0){
+      _rho_vs_eta[jeta] = 0;
+      continue;
+    }
+    if (n_full  % 2 == 0)
+      {
+        _rho_vs_eta[jeta] = (rho_vs_phi[(int)(n_full / 2 - 1)] + rho_vs_phi[(int)(n_full / 2)]) / 2;
+      }
+    else 
+      {
+        _rho_vs_eta[jeta] = rho_vs_phi[(int)(n_full / 2)];
+      }
+    //correct for empty cells 
+    _rho_vs_eta[jeta] *= (((double) n_full)/((double) _nphi));
+    //normalize to area
+    _rho_vs_eta[jeta] /= _tile_area;
   }
+  std::cout << "finish HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
 }
 
 void
