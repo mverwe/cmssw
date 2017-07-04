@@ -155,27 +155,27 @@ HiFJGridEmptyAreaCalculator::produce(edm::Event& iEvent, const edm::EventSetup& 
 void
 HiFJGridEmptyAreaCalculator::calculate_grid_rho(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  std::cout << "enter HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
+  //std::cout << "enter HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
   vector<vector<double>> scalar_pt(_ny, vector<double>(_nphi, 0.0));
-  std::cout << "_ny: " << _ny << " _nphi: " << _nphi << std::endl;
+  //std::cout << "_ny: " << _ny << " _nphi: " << _nphi << std::endl;
   edm::Handle<reco::PFCandidateCollection> pfCands;
   iEvent.getByToken(pfCandsToken_, pfCands);
   const reco::PFCandidateCollection *pfCandidateColl = pfCands.product();
-  std::cout << "loop over PF candidates" << std::endl;
+  //std::cout << "loop over PF candidates" << std::endl;
   for(unsigned icand = 0; icand < pfCandidateColl->size(); icand++) {
     const reco::PFCandidate pfCandidate = pfCandidateColl->at(icand);
     //use ony the particles within the eta range
     if (pfCandidate.eta() < _ymin || pfCandidate.eta() > _ymax ) continue;
-    std::cout << "particle passed eta selection. eta: " << pfCandidate.eta() << std::endl;
+    //std::cout << "particle passed eta selection. eta: " << pfCandidate.eta() << std::endl;
     int jeta = tile_index_eta(&pfCandidate);
-    std::cout << "jeta: " << jeta << std::endl;
+    //std::cout << "jeta: " << jeta << std::endl;
     int jphi = tile_index_phi(&pfCandidate);
-    std::cout << "jphi: " << jphi << std::endl;
+    //std::cout << "jphi: " << jphi << std::endl;
     if(jeta<0 || jphi<0) continue; //MV: Avoiding SegFault. Happens when eta of particle is exactly 5
     scalar_pt[jeta][jphi] += pfCandidate.pt();
   }
 
-  std::cout << "_ny: " << _ny << std::endl;
+  //  std::cout << "_ny: " << _ny << std::endl;
   _rho_vs_eta.resize(_ny);
   _mean_rho_vs_eta.resize(_ny);
   for(int jeta = 0; jeta < _ny; jeta++){
@@ -192,7 +192,7 @@ HiFJGridEmptyAreaCalculator::calculate_grid_rho(const edm::Event& iEvent, const 
       if(binpt > 0) rho_vs_phi.push_back(binpt);
       else n_empty++;
     }
-    std::cout << "_nphi: " << _nphi << " _tile_area: " << _tile_area << std::endl;
+    //std::cout << "_nphi: " << _nphi << " _tile_area: " << _tile_area << std::endl;
     _mean_rho_vs_eta[jeta] /= ((double)_nphi);
     _mean_rho_vs_eta[jeta] /= _tile_area;
 
@@ -217,7 +217,7 @@ HiFJGridEmptyAreaCalculator::calculate_grid_rho(const edm::Event& iEvent, const 
     //normalize to area
     _rho_vs_eta[jeta] /= _tile_area;
   }
-  std::cout << "finish HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
+  //std::cout << "finish HiFJGridEmptyAreaCalculator::calculate_grid_rho" << std::endl;
 }
 
 void
