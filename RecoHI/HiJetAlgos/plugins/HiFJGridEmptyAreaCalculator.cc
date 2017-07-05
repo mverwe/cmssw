@@ -355,8 +355,10 @@ HiFJGridEmptyAreaCalculator::tile_index_eta(const reco::PFCandidate *pfCand)  {
   // though answers are identical and the routine here is not the
   // speed-critical step. It's not at all clear why.
   int iy = int(floor( (pfCand->eta() - _ymin) / _dy ));
-  if (iy < 0 || iy >= _ny) return -1;
-  
+  if (iy < 0 || iy >= _ny) {
+    //std::cout << "iy: " << iy << " _ny: " << _ny << " _dy: " << _dy << " eta pf cand: " << pfCand->eta() << std::endl;
+    return -1;
+  }
   assert (iy < _ny && iy >= 0);
 
   return iy;
