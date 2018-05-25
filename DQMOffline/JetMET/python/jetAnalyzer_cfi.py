@@ -214,7 +214,6 @@ jetDQMAnalyzerAkPU3Calo = DQMEDAnalyzer('JetAnalyzer_HeavyIons',
                                          reverseEnergyFractionThreshold = cms.double(0.5)
 )
 jetDQMAnalyzerAkPU4Calo = jetDQMAnalyzerAkPU3Calo.clone(src = cms.InputTag("akPu4CaloJets"))
-jetDQMAnalyzerAkPU5Calo = jetDQMAnalyzerAkPU3Calo.clone(src = cms.InputTag("akPu5CaloJets"))
  
 jetDQMAnalyzerAkPU3PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons',
                                        JetType = cms.untracked.string('pf'),
@@ -231,7 +230,6 @@ jetDQMAnalyzerAkPU3PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons',
                                        reverseEnergyFractionThreshold = cms.double(0.5)
 )
 jetDQMAnalyzerAkPU4PF = jetDQMAnalyzerAkPU3PF.clone(src = cms.InputTag("akPu4PFJets"))
-jetDQMAnalyzerAkPU5PF = jetDQMAnalyzerAkPU3PF.clone(src = cms.InputTag("akPu5PFJets"))
 
 jetDQMAnalyzerAkCs3PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons',
                                          JetType = cms.untracked.string('pf'),
@@ -269,16 +267,6 @@ jetDQMMatchAkPu3CaloAkPu3PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons_matching',
 jetDQMMatchAkPu4CaloAkPu4PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons_matching',
                                              src_Jet1 = cms.InputTag("akPu4CaloJets"),
                                              src_Jet2 = cms.InputTag("akPu4PFJets"),
-                                             Jet1     = cms.untracked.string("PuCalo"),
-                                             Jet2     = cms.untracked.string("PuPF"),
-                                             recoJetPtThreshold = cms.double(20.),
-                                             recoDelRMatch = cms.double(0.2),
-                                             recoJetEtaCut = cms.double(2.0)
-)
-
-jetDQMMatchAkPu5CaloAkPu5PF = DQMEDAnalyzer('JetAnalyzer_HeavyIons_matching',
-                                             src_Jet1 = cms.InputTag("akPu5CaloJets"),
-                                             src_Jet2 = cms.InputTag("akPu5PFJets"),
                                              Jet1     = cms.untracked.string("PuCalo"),
                                              Jet2     = cms.untracked.string("PuPF"),
                                              recoJetPtThreshold = cms.double(20.),

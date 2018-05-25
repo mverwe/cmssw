@@ -181,10 +181,8 @@ hiJetValidation = cms.Sequence(
     * ak5HiCleanedGenJets
     * JetAnalyzerAkPU3Calo
     * JetAnalyzerAkPU4Calo
-    * JetAnalyzerAkPU5Calo
 
     * JetAnalyzerAkPU3PF
     * JetAnalyzerAkPU4PF
-    * JetAnalyzerAkPU5PF
         
 )
