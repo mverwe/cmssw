@@ -3,12 +3,9 @@ import FWCore.ParameterSet.Config as cms
 #Full Event content ---- temporary
 RecoHiJetsRECO = cms.PSet(
     outputCommands = cms.untracked.vstring( 'keep *_akPu3CaloJets_*_*',
-                                            'keep *_akPu4CaloJets_*_*', 
-                                            'keep *_akPu5CaloJets_*_*', 
-                                            'keep *_iterativeConePu5CaloJets_*_*', 
+                                            'keep *_akPu4CaloJets_*_*',  
                                             'keep *_akPu3PFJets_*_*',
                                             'keep *_akPu4PFJets_*_*',
-                                            'keep *_akPu5PFJets_*_*',
                                             'keep *_akCs3PFJets_*_*',
                                             'keep *_akCs4PFJets_*_*',
                                             'keep *_kt4PFJetsForRho_*_*',

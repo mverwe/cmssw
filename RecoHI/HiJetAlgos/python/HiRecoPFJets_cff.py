@@ -88,7 +88,7 @@ akCs3PFJets = akCs4PFJets.clone(rParam       = cms.double(0.3))
 
 hiRecoPFJets = cms.Sequence(
     PFTowers
-    *akPu3PFJets*akPu4PFJets*akPu5PFJets
+    *akPu3PFJets*akPu4PFJets
     *kt4PFJetsForRho*hiFJRhoProducer
     *akCs3PFJets*akCs4PFJets
     )

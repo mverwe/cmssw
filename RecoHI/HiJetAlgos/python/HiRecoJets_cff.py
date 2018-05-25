@@ -106,15 +106,15 @@ ak7CaloJets = ak5CaloJets.clone(rParam       = cms.double(0.7))
 hiRecoJets = cms.Sequence(
     caloTowersRec*caloTowers*
     iterativeConePu5CaloJets*
-    akPu3CaloJets*akPu4CaloJets*akPu5CaloJets
+    akPu3CaloJets*akPu4CaloJets
     )
 
 ## Extended Sequence
 hiRecoAllJets = cms.Sequence(
-    caloTowersRec*caloTowers*iterativeConePu5CaloJets
-    *ak1CaloJets*ak2CaloJets*ak3CaloJets*ak4CaloJets*ak5CaloJets*ak6CaloJets*ak7CaloJets
-    *akPu1CaloJets*akPu2CaloJets*akPu3CaloJets*akPu4CaloJets*akPu5CaloJets*akPu6CaloJets*akPu7CaloJets*
-    ktPu4CaloJets*ktPu6CaloJets
+    caloTowersRec*caloTowers
+    *ak3CaloJets*ak4CaloJets
+    *akPu3CaloJets*akPu4CaloJets
+    *ktPu4CaloJets
     )
 
 
