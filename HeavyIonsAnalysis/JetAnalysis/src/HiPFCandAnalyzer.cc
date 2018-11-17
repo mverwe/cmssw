@@ -74,6 +74,12 @@ HiPFCandAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     pfEvt_.pfEta_.push_back( pfcand.eta() );
     pfEvt_.pfPhi_.push_back( pfcand.phi() );
     pfEvt_.pfM_.push_back( pfcand.mass() );
+    
+    pfEvt_.pfEcalE_.push_back( pfcand.ecalEnergy() );
+    pfEvt_.pfEcalEraw_.push_back( pfcand.rawEcalEnergy() );
+    pfEvt_.pfHcalE_.push_back( pfcand.hcalEnergy() );
+    pfEvt_.pfHcalEraw_.push_back( pfcand.rawHcalEnergy() );
+    
     pfEvt_.nPFpart_++;
   }
 
@@ -141,6 +147,10 @@ void TreePFCandEventData::SetBranches(bool doJets, bool doMC)
   tree_->Branch("pfEta", &pfEta_);
   tree_->Branch("pfPhi", &pfPhi_);
   tree_->Branch("pfM", &pfM_);
+  tree_->Branch("pfEcalE", &pfEcalE_);
+  tree_->Branch("pfEcalEraw", &pfEcalEraw_);
+  tree_->Branch("pfHcalE", &pfHcalE_);
+  tree_->Branch("pfHcalEraw", &pfHcalEraw_);
 
   // -- jet info --
   if (doJets) {
@@ -169,6 +179,10 @@ void TreePFCandEventData::Clear()
   pfEta_.clear();
   pfPhi_.clear();
   pfM_.clear();
+  pfEcalE_.clear();
+  pfEcalEraw_.clear();
+  pfHcalE_.clear();
+  pfHcalEraw_.clear();
 
   nGENpart_ = 0;
   genPDGId_.clear();
